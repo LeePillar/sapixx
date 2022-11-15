@@ -1,0 +1,94 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="__PUBLIC__/img/wepay.svg"></div>
+            <div class="tile-content">
+                <div class="tile-title">微信支付</div>
+                <div class="tile-subtitle text-gray">微信支付是微信线下场所、公众号、小程序、PC网站、APP、企业微信等经营场景的首选支付方式。</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form id="form" action="{:url('apps/configWechatPay')}">
+            <div class="toast toast-warning">平台服务商/自助服务商两种模式只能使用其中一种</div>
+            <div class="cols">
+                {if !empty(config('config.wechat_sp.mchid')) && !empty(config('config.wechat_sp.secret'))}
+                <div class="col col-auto">
+                    <div class="form-group">
+                        <label class="form-label">平台服务商</label>
+                        <label class="form-switch"><input type="checkbox" name="is_platform_psp" value="1" {if isset($info.is_platform_psp) && $info.is_platform_psp == 1}checked{/if}><i class="form-icon"></i> </label>
+                    </div>
+                </div>
+                {/if}
+                <div class="col col-auto">
+                    <div class="form-group">
+                        <label class="form-label">自助服务商</label>
+                        <label class="form-switch"><input type="checkbox" name="is_psp" value="1" {if isset($info.is_psp) && $info.is_psp == 1}checked{/if}><i class="form-icon"></i> </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">APPID</label>
+                <div class="input-group"><input data-rule="required;letters_num" class="form-input" type="text" name="appid" value="{$info.appid??''}"/></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">商户号</label>
+                <div class="input-group"><input data-rule="required;letters_num" class="form-input" type="text" name="mchid" value="{$info.mchid??''}"/></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">API密钥</label>
+                <div class="input-group"><input data-rule="required" autocomplete="off" data-rule="letters_num" class="form-input" type="text" name="secret" value="{$info.secret??''}"/></div>
+            </div>
+            <div class="toast toast-warning">如果启用服务商模式后,以下信息可免填写</div>
+            <div class="form-group">
+                <label class="form-label">证书Cert</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="cert" value="{$info.cert??''}"/>
+                    <button type="button" class="btn" id="cert" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">证书Key</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="certkey" value="{$info.certkey??''}"/>
+                    <button type="button" class="btn" id="certkey" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">APIv3密钥</label>
+                <input autocomplete="off" data-rule="letters_num" class="form-input" type="text" name="secretv3" value="{$info.secretv3??''}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">APIv3证书序列号 <span class="text-tiny text-gray">不知道免填写</span></label>
+                <input autocomplete="off" data-rule="letters_num" class="form-input" type="text" name="serial_no" value="{$info.serial_no??''}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">APIv3平台证书 <span class="text-tiny text-gray">以上信息配置完成并保存后,可一键同步平台证书</span></label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="platform_certs" value="{$info.platform_certs??''}"/>
+                    <button {:isset($info.secretv3)?'':'disabled'} url="{:url('apps/getCart',['type'=>$type])}" type="button" class="btn" id="platform_certs" gray><i class="icon bi-arrow-clockwise"></i> 一键同步</button>
+                </div>
+            </div>
+            <div class="form-group mt-24">
+                <button type="submit" class="btn" primary>保存配置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base','form','upload',function () {
+    $('#form').isForm();
+    $('#cert').upload({multiple:false,private:true},(rel)=>{
+        $("input[name='cert']").val(rel.url)
+    });
+    $('#certkey').upload({multiple:false,private:true},(rel)=>{
+        $("input[name='certkey']").val(rel.url)
+    });
+    $('#platform_certs').actUrl({content:'读取证书',text:'一键绑定平台证书前,请先保存前面的配置信息'});
+});
+</script>
+{/block}

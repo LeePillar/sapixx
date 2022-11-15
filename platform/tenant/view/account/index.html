@@ -1,0 +1,171 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="cols mb-16">
+    <div class="col col-sm-12 col-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="tile tile-centered">
+                    <div class="tile-icon">
+                        <div class="avatar avatar-xl none w50 h50"><img src="{$tenant.avatar}" class="w50 h50"></div>
+                    </div>
+                    <div class="tile-content">
+                        <div class="tile-title text-large">{$tenant.username}</div>
+                        <small class="tile-subtitle text-gray">{:app('util')->hideStr($tenant.phone_id)}</small>
+                    </div>
+                    <div class="tile-action">
+                        <div class="dropdown dropdown-right space btn-group"> 
+                            <a class="btn btn-sm" href="{:url('account/recharge')}" outline primary><i class="icon icon-1x bi-currency-yen mr-4"></i>充值</a>
+                            <button class="btn btn-sm dropdown-toggle" outline primary>设置<i class="icon bi-caret-down-fill  ml-4"></i></button>
+                            <ul class="menu">
+                                <li class="menu-item"><a href="{:url('account/edit')}"><i class="icon bi-person mr-4"></i>基本信息</a></li>
+                                <li class="menu-item"><a href="{:url('account/phone')}"><i class="icon bi-phone mr-4"></i>绑定手机</a></li>
+                                {if config('config.wechat_account.account') == true}<li class="menu-item"><a href="{:url('account/bindwechat')}"><i class="icon bi-chat-dots mr-4"></i>绑定微信</a></li>{/if}
+                                <li class="menu-item"><a href="{:url('account/password')}"><i class="icon bi-lock mr-4"></i>登录密码</a></li>
+                                <li class="menu-item"><a href="{:url('account/safepassword')}"><i class="icon bi-shield mr-4"></i>安全密码</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col cols col-12 mt-24">
+                    <div class="col">
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><span class="w40 h40 bg-warning-light rounded space space-align-center space-justify-center"><i class="icon icon-4x bi-currency-yen"></i></span></div>
+                            <div class="tile-content"><div class="tile-title text-bold h3 widget-price">{$tenant.money+$tenant.lock_money|money}</div>
+                            <small class="tile-subtitle text-gray">账户余额</small></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><span class="w40 h40 bg-error-light rounded space space-align-center space-justify-center"><i class="icon icon-4x bi-credit-card"></i></span></div>
+                            <div class="tile-content"><div class="tile-title text-bold h3">{$consumes}</div>
+                            <small class="tile-subtitle text-gray">消费金额</small></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><span class="w40 h40 bg-success-light rounded space space-align-center space-justify-center"><i class="icon icon-4x bi-app-indicator"></i></span></div>
+                            <div class="tile-content"><div class="tile-title text-bold h3">{$apps_count}</div>
+                            <small class="tile-subtitle text-gray">应用数量</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-sm-12 col-6">
+        <div class="card">
+            <div class="card-body cols">
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">用户身份<span class="ml-16 status {$tenant.agent?'status-error':''}">{$tenant.agent?$tenant.agent.title:'普通用户'}</span></li>
+                        <li class="list-item">用户状态<span class="ml-16 status {$tenant.is_lock?'':'status-success'}">{$tenant.is_lock?'锁定':'正常'}</span></li>
+                        <li class="list-item">配置权限<span class="ml-16 status {$tenant.lock_config?'':'status-success'}">{$tenant.lock_config?'未开启':'已开启'}</span></li>
+                        <li class="list-item">扫码登录<span class="ml-16 status {$tenant.wechat_id?'status-success':''}">{$tenant.wechat_id?'已绑定':'未绑定'}</span></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">创建时间<span class="ml-16 text-gray">{$tenant.create_time}</span></li>
+                        <li class="list-item">更新时间<span class="ml-16 text-gray">{$tenant.update_time}</span></li>
+                        <li class="list-item">最后登录<span class="ml-16 text-gray">{$tenant.login_time}</span></li>
+                        <li class="list-item">最后来访<span class="ml-16 text-gray">{$tenant.login_ip}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-menu-app icon-2x mr-8"></i>开通应用</div>
+            <div class="col col-auto btn-group btn-group-block">
+                <a pjax href="{:url('account/index',['types'=>0])}" class="btn" {$Request.param.types == 0?'primary':'outline'}>正常</a>
+                <a pjax href="{:url('account/index',['types'=>1])}" class="btn" {$Request.param.types == 1?'primary':'outline'}>过期</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {empty name="apps"}
+        <div class="empty">
+            <div class="empty-icon text-primary"><i class="icon bi-menu-app"></i></div>
+            <p class="empty-title text-bold">没有应用</p><p class="empty-subtitle text-tiny">你还没有开通任何应用,现在去开通</p>
+            <p class="empty-title mt-16"><a class="btn" href="{:url('store/index')}" primary>开通应用</a></p>
+        </div>
+        {else /}
+        <table class="table table-xl table-hover table-space">
+            <thead><tr><th>应用名称</th><th class="w70">默认</th><th class="w70">状态</th><th class="w100">到期时间</th><th class="w120">创建时间</th><th class="w100">更新时间</th></tr></thead>
+            <tbody>
+                {foreach $apps as $rs}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.logo}"></div>
+                            <div class="tile-content hide-sm">
+                                <div class="text-dark">{$rs.title}</div>
+                                <div class="text-gray hide-xl">{$rs.about??''}</div>
+                            </div>
+                            <div class="tile-action hide-lg">
+                                <div class=" btn-group">
+                                    {if !$rs.is_lock}
+                                    <button class="btn btn-sm manage" url="{:url('account/manage',['id' => $rs->id])}" outline primary>管理</button>
+                                    {/if}
+                                    <a class="btn btn-sm" href="{:url('account/appsRenewal',['id' => $rs->id])}" outline primary>续期</a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="act status {$rs.is_default?'status-success':''}" href="{:url('account/setDefault',['id' => $rs->id])}">默认</a></td>
+                    <td><span class="status {$rs.is_lock?'':'status-success'}">{$rs.is_lock?'锁定':'正常'}</span></td>
+                    <td class="{$rs->getData('end_time')<=time()?'text-error text-bold':''}">{$rs.end_time}</td>
+                    <td>{$rs.create_time|date='Y-m-d'}</td>
+                    <td>{$rs.update_time|date='Y-m-d'}</td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+        {/empty}
+    </div>
+</div>
+<div class="card mt-16">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-list-task icon-2x mr-8"></i>用户账单</div>
+            <div class="col col-auto btn-group btn-group-block">
+                <a pjax href="{:url('account/index',['money'=>0,'id'=>$tenant.id])}" class="btn" {$Request.param.money == 0?'primary':'outline'}>全部</a>
+                <a pjax href="{:url('account/index',['money'=>1,'id'=>$tenant.id])}" class="btn" {$Request.param.money == 1?'primary':'outline'}>充值</a>
+                <a pjax href="{:url('account/index',['money'=>2,'id'=>$tenant.id])}" class="btn" {$Request.param.money == 2?'primary':'outline'}>消费</a>
+            </div>
+        </div>
+    </div>
+    {notempty name="bill"}
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead><tr><th class="w80 text-center">类型</th><th class="w100">金额</th><th class="w80">类型</th><th>说明</th><th class="w140">时间</th></tr></thead>
+            <tbody>
+            {foreach $bill as $vo}
+            <tr>
+                <td class="text-center"><span class="tag tag-{$vo.money>0?'primary':'warning'}">{$vo.types}</span></td>
+                <td class="widget-price">{$vo.money}</td>
+                <td><span class="lock status status-{$vo.state?'success':''}">{$vo.state_text}</span></td>
+                <td>{$vo.message}</td>
+                <td>{$vo.update_time|date='Y-m-d H:i:s'}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <div class="{$bill->hasPages()?'card-footer':'d-hide'}">{$bill|raw}</div>
+    {/notempty}
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.act').actUrl({text:'确定设置为默认应用?'})
+    $('.manage').actUrl({text:'你确定要管理这个应用?'},(rel) =>{
+        parent.window.location.reload();
+    })
+})
+</script>
+{/block}

@@ -1,0 +1,54 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-body">
+        <form id="form" action="{:url('agent/edit',['id' => $Request.param.id])}">
+            <div class="form-group">
+                <label class="form-label">代理名称</label>
+                <div class="input-group">
+                    <input autocomplete="off" data-rule="required" class="form-input" type="text" name="title"  value="{$info.title??''}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">开通价格</label>
+                <div class="input-group">
+                    <label class="input-addon widget-price">支付金额</label>
+                    <input autocomplete="off" data-rule="required;npot" class="form-input" type="number" name="price"  value="{$info.price??''}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="input-addon widget-price">赠送金额</label>
+                    <input autocomplete="off" data-rule="required;npot" class="form-input" type="number" name="price_gift"  value="{$info.price_gift??''}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">续费价格</label>
+                <div class="input-group">
+                    <label class="input-addon widget-price" >支付金额</label>
+                    <input autocomplete="off" data-rule="required;npot" class="form-input" type="number" name="recharge_price"  value="{$info.recharge_price??''}" />
+                </div>
+            </div>
+            <div class="form-group input-group">
+                <label class="input-addon widget-price">赠送金额</label>
+                <input autocomplete="off" data-rule="required;npot" class="form-input" type="number" name="recharge_price_gift"  value="{$info.recharge_price_gift??''}" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">购买折扣 <span class="text-tiny text-large">2 - 9之间的折扣率</span></label>
+                <input autocomplete="off" data-rule="required;npot" class="form-input" type="number" name="discount"  value="{$info.discount??8}" />
+            </div>
+            <div class="form-group mt-16">
+                <button type="submit" class="btn" primary>确认</button>
+                <button type="reset" class="btn" >重置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('form',function () {
+    $('#form').isForm();
+});
+</script>
+{/block}

@@ -1,0 +1,48 @@
+{extend name="./layout" /}
+{block name='style'}
+<style>
+    .card-body{max-height:350px;overflow-y: auto;overflow-x: hidden;}
+</style>
+{/block}
+{block name='main'}
+{empty name="level"}
+<div class="empty">
+    <div class="empty-icon"><i class="icon bi-person"></i></div>
+    <p class="empty-title text-bold">没有邀请关系</p><p class="empty-subtitle text-tiny">没有任何用户是你的上层关系</p>
+</div>
+{else}
+<div class="card">
+    <div class="card-body scrollbar">
+        <ul class="timeline">
+            {foreach $level as $key => $rs}
+                <li class="timeline-item">
+                    <div class="timeline-item-line"></div>
+                    <div class="timeline-item-dot  timeline-item-dot-diy"><div class="avatar avatar-lg"><img src="{$rs.face}" class="img-responsive"></div></div>
+                    <div class="timeline-item-content">
+                        <div class="tile tile-centered">
+                            <div class="tile-content">
+                                <div class="tile-title"><span class="text-bold">{$rs.nickname}</span>{if $rs.phone}<span class="text-primary ml-8"><i class="icon bi-phone"></i>{$rs.phone}</span>{/if}</div>
+                                <small class="tile-subtitle text-gray">{$rs.create_time}</small>
+                            </div>
+                            <div class="tile-icon"><button class="btn" icon>{$key+1}</button></div>
+                        </div>
+                    </div>
+                </li>
+            {/foreach}   
+        </ul>
+    </div>
+</div> 
+{/empty}
+<div class="card mt-8">
+    <div class="card-body">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="{$info.face}"></div>
+            <div class="tile-content">
+                <div class="tile-title">{$info.nickname}</div>
+                <small class="tile-subtitle">{if $info.phone}<span class="text-primary"><i class="icon bi-phone"></i>{$info.phone}</span>{/if}</small>
+            </div>
+            <div class="tile-icon"><i class="icon bi-sort-numeric-up icon-5x"></i></div>
+        </div>
+    </div>
+</div> 
+{/block}

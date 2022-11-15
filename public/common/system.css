@@ -1,0 +1,56 @@
+@charset "utf-8";
+@import url('css/ui.css');
+@import url('css/icons.css');
+body{background-color:var(--gray-2);color: var(--gray-8);}
+#layoutLogin{width:100%;height:100vh;}
+/* 登录 */
+#login{position:relative;z-index:1;padding:16px;}
+#login .login_type{border-radius:0px 5px 0px 0px;position: absolute;z-index: 2;width: 0;height: 0;border-color: var(--blue-1) var(--blue-1) transparent transparent;border-style: solid;border-width: 38.5px;top: 0;right: 0;overflow: visible;-webkit-transform: rotate(0);transform: rotate(0);}
+#login .login_type i{top: -26px;left: -19px;width:40px;height: 40px;-webkit-transform: rotate(0);transform: rotate(0);cursor: pointer;position: absolute;-webkit-transform: rotate(0);transform: rotate(0);background-size: 78% 78%;background-position: 50%;background-repeat: no-repeat;}
+#login .login_type i:before {content: "";position: absolute;left: -6px;top: 1px;border-color: transparent transparent #fff #fff;border-style: solid;border-width: 20px;}
+#login .login_type .scan-icon i{background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0iIzMzNzBGRiIgZD0iTTQuNjI4IDE3Ljk3aDEyLjQ1NFY1LjQ1Mkg0LjYyOFYxNy45N3pNLjEuOWgyMS41MXYyMS42MjJILjFWLjl6bTcuOTI1IDcuOTY2aDUuNjZ2NS42OWgtNS42NnYtNS42OXpNMi45MyAzMC4yMjd2Ny4yMjNoNy4xODV2LTcuMjIzSDIuOTN6TS4xIDI3LjM4MmgxMi40NTNWMzkuOUguMVYyNy4zODJ6bTI4Ljc0LTIyLjg3djcuMjIyaDcuMTg2VjQuNTFIMjguODR6TTI1LjI0OS45SDM5LjF2MTQuNDQ1SDI1LjI0OFYuOXptMy41OTMgMjguODl2Ny4yMjJoNy4xODVWMjkuNzlIMjguODR6bS0zLjU5My0yLjQwOEgzOVYzOS45SDI1LjI0OFYyNy4zODJ6bS04LjM4My0xLjQ0Nmg0LjUyOXY0LjU1MmgtNC41Mjl2LTQuNTUyem0wIDYuODI4aDQuNTI5djYuODI3aC00LjUyOXYtNi44Mjd6bTguMTQxLTEzLjY1Nmg0LjUyOXY0LjU1MmgtNC41Mjl2LTQuNTUyem02Ljc5MyAwaDYuNzkzdjQuNTUySDMxLjh2LTQuNTUyeiIvPjwvc3ZnPg==);}
+#login .login_type .account-icon i{background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNCIgaGVpZ2h0PSIzMiI+PHBhdGggZmlsbD0iIzMzNzBGRiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMjYgMjl2M0g5di0zaDE3em02LjM4MS0yOUMzMy4yNzUgMCAzNCAuNzI4IDM0IDEuNjI1djIyLjc1YzAgLjg5Ny0uNzI1IDEuNjI1LTEuNjE5IDEuNjI1SDEuNjE5QTEuNjIyIDEuNjIyIDAgMDEwIDI0LjM3NVYxLjYyNUMwIC43MjguNzI1IDAgMS42MTkgMGgzMC43NjJ6bS0xLjYyIDIwSDMuMjM4djIuNzVoMjcuNTI0TDMwLjc2IDIwem0wLTE2Ljc1SDMuMjM5VjE3aDI3LjUyM1YzLjI1eiIvPjwvc3ZnPg==);}
+#login .tooltip-content {position: absolute;padding:5px;right:20px;white-space: nowrap;border-radius: 2px;background: #37f;color: #fff;font-size: 14px;-webkit-transform: translateY(-60%);transform: translateY(-60%);-webkit-box-shadow: 0 4px 10px 0 rgba(153,187,255,.4);box-shadow: 0 4px 10px 0 rgba(153,187,255,.4);}
+#login.tooltip-content:after {content: "";display: block;width: 0;height: 0;right: -6px;top:10px;background: #37f;position: absolute;border-color: #37f #37f transparent transparent;border-style: solid;border-width: 6px;-webkit-transform: rotate(45deg) translate(0);transform: rotate(45deg) translate(0);}
+#login #captcha{width:160px;height:36px;}
+#login #show_qrcode{width: 240px;margin: auto;padding: 20px 20px 0px;}
+#login #show_qrcode img{width: 200px;height: 200px;text-align: center;}
+/*后台框架 */
+.layoutMain{display: flex;flex: 1;flex-direction: column;overflow-y:hidden;position:absolute;top: 0px;right: 0px;bottom:0px;left: 0;}
+.layoutMain #header{z-index:10;position:absolute;top: 0px;right: 0px;left: 0px;height: 60px;padding: 0 16px;}
+.layoutMain #header .account .btn:nth-last-child(2){border-right: none;}
+.layoutMain.sun #header{background-color:var(--color-white);border-bottom: 1px solid var(--gray-3);}
+.layoutMain.moon #header{background-color:var(--blue-6);border-bottom: 1px transparent;}
+.layoutMain #menu{z-index:9;position:absolute;top:60px;bottom: 0px;left: 0px;width: 180px;background:var(--color-white);flex: none;border-right: 1px solid var(--gray-3);box-shadow: 0 2px 5px 0 rgba(0,0,0,.08);flex-shrink:1;overflow-x:hidden;overflow-y:auto}
+.layoutMain #menu:hover::-webkit-scrollbar{display:block;}
+.layoutMain #iframeBody{position:absolute;top:60px;right: 0px;bottom:0px;left:180px;}
+.layoutMain #iframeBody iframe{width: 100%;height: 100%;overflow:hidden;}
+/* 框架内容 */
+.layoutLogo{width: 178px;height:51px;margin:4px 0px;}
+.layoutMain.moon .layoutLogo{background: url(img/logolight.png) no-repeat center center}
+.layoutMain.sun .layoutLogo{background: url(img/logo.png) no-repeat center center}
+/* 判断是否显示左侧菜单 */
+.layoutMain.show{left:70px;}
+.layoutBar{display: none;width:70px;background-color: var(--gray-8);position: fixed;height: 100%;top: 0;left:-70px;z-index:6;}
+.layoutBar.show{display: block!important;}
+.layoutBar .layoutConsole{position: relative;height:70px;padding:10px;}
+.layoutBar .layoutNav ul{width: 100%;}
+.layoutBar .layoutNav li{border-radius:2px;cursor:pointer;text-align: center;padding:4px 0px;margin-bottom:8px;color:var(--color-white);line-height:1.5;}
+.layoutBar .layoutNav li .icon{font-size:20px}
+.layoutBar .layoutNav li:hover,.layoutBar .layoutNav li.focus{background:var(--gray-7);}
+/* 切换应用 */
+.change-app{position:absolute;top:34px;z-index:99999;background-color: var(--color-white);border:1px var(--gray-2) solid;padding:16px;width:35rem;}
+.change-app-btn{z-index:99999;position: relative;}
+.change-app-btn.btn-group .btn:nth-child(3){border-right: none;}
+.change-app-shade{z-index:9999;position:fixed;background-color: rgb(0, 0, 0);opacity:0;top: 0;left: 0;width: 100%;height: 100%;}
+/* 内容区 */
+.docs-brand{padding:10px 16px 0px 16px;}
+.docs-content{margin:16px;display: flex;flex: auto;flex-direction: column;box-sizing: border-box;}
+/* 登录首页 */
+.login-header{flex: 0 0 auto;height:80px;padding: 0 32px;padding-top:20px;}
+.login-content{flex: 1 1;min-height: auto;padding-top: 120px;}
+.login-footer{position:absolute;bottom: 0;left: 0px;right: 0;padding:20px;}
+/* UI样式重定义 */
+.card-footer .pagination{float:right;}
+.ui-img .card.card-sm .card-image,
+.ui-img-botton .card.card-sm .card-image{height: 110px;padding:0px;}

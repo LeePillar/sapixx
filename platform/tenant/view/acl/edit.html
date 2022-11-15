@@ -1,0 +1,51 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-header tab">
+        <div class="tab-item text-bold active"><a href="{:url('acl/index')}">帐号管理</a></div>
+        <div class="tab-item text-bold"><a href="{:url('acl/group')}">角色管理</a></div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('acl/edit')}">
+            <input type="hidden" name="id" value="{$info.id??0}" />
+            <div class="form-group">
+                <label class="form-label">选择角色</label>
+                <select id="group_id" name="group_id" class="form-select">
+                    <option value=""> - 请选择角色 - </option>
+                    {volist name="group" id="vo"}<option value="{$vo.id}" {:isset($info.group_id) && $info.group_id==$vo.id?'selected':''}>{$vo.title}</option>{/volist}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">帐号名称</label>
+                <div class="input-group"><input data-rule="required" class="form-input" type="text" name="username" value="{$info.username??''}" /></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">手机号(登录ID)</label>
+                <div class="input-group"><input data-rule="required;mobile;remote({:url('acl/isphone',['id'=> $info.id??0])})" class="form-input" type="text" name="phone" value="{$info.phone_id??''}" /></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">登录密码<span class="text-gray text-tiny pl-8">不填,初始话密码为123456</span></label>
+                <div class="input-group"><input name="password" class="form-input" data-rule="登录密码:length(6~16)" type="password" autocomplete></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <div class="input-group"><input name="repassword" class="form-input" data-rule="确认密码:match(password)" type="password" autocomplete></div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn" primary>确定</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{/block}}
+{block name='js'}
+<script type="text/javascript">
+Do('form','select',function () {
+    $('#form').isForm();
+    $('#group_id').select2({language:{noResults:()=>{return"未找到结果"}}})
+});
+</script>
+{/block}
+
+

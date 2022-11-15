@@ -1,0 +1,92 @@
+{extend name="./layout" /}
+{block name="style"}
+<style type="text/css">
+#app{background:linear-gradient(180deg,var(--color-white),var(--gray-3));}
+</style>
+{/block}
+{block name="body"}
+<div id="layoutLogin">
+    {include file="index/layoutlogin" /}
+    <div class="login-content space-justify-center cols col-gapless">
+        <div class="card w500" id="login" x-data="scanShow()">
+            <div class="card-header"><div class="card-title text-bold">{$configs.name}</div><div class="card-subtitle mt-4">{$configs.about}</div></div>
+            {if config('config.wechat_account.account') == true}
+            <div class="login_type" @click="open"><div id="account" class="scan-icon"><i></i><div class="tooltip-content">微信扫码</div></div></div>
+            <div class="card-body" x-show="show === true">
+                <div id="qrcode" class="auto w260 auto c-hand loading tips tips-bottom" data-tips="点击换二维码"></div>
+                <div class="text-center text-gray outtime">倒计时 <b id="wait" class="text-error">60</b> 秒后失效</div>
+                <div class="text-center mt-8">微信扫码<span class="text-gray">(未绑定扫码无效)</span></div>
+            </div>
+            {/if}
+            <form id="form" class="form-horizontal form-lg" action="{:url('tenant/index/login')}" x-show="show === false">
+            <div class="card-body">
+                <div class="form-group input-group">
+                    <span class="input-addon"><i class="icon bi-person"></i></span>
+                    <input name="phone_id" data-rule="required" autocomplete="off" class="form-input" type="text" placeholder="手机号" value="{$login.user??''}">
+                </div>
+                <div class="form-group  input-group">
+                    <span class="input-addon"><i class="icon bi-key"></i></span>
+                    <input name="password" data-rule="required" autocomplete="off" class="form-input" type="password" placeholder="密码" value="{$login.password??''}">
+                </div>
+                <div class="form-group input-group ">
+                    <input name="captcha" data-rule="required" autocomplete="off" class="form-input" type="text" placeholder="验证码" />
+                    <img id="captcha" src="{:captcha_src()}" alt="captcha" class="c-hand ml-24" />
+                </div>
+            </div> 
+            <div class="card-footer space-align-center space-justify-between cols col-gapless text-gray">
+                <div><label class="form-checkbox"><input {$login?"checked":""} type="checkbox" name="settemp" value="1"><i class="form-icon"></i> 记住密码</label></div>
+                <div>无法登陆？ <a href="{:url('tenant/index/forgot')}" class="text-bold text-primary">找回密码</a></div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-block" type="submit" primary>确认</button>
+                <a href="{:url('tenant/index/register')}" class="btn btn-block mt-8" text>注册登录</a>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('form','http','qrcode',() => {
+    NProgress.start();NProgress.done();
+    var captcha = (dom)=>{$(dom).attr("src", "/captcha.html?rnd=" + Math.random())}
+    $('#form').isForm((rel)=>{200!=rel.code&&captcha("#captcha")});
+    $('#captcha').click(function () {captcha(this)});
+})
+</script>
+{if config('config.wechat_account.account') == true}
+<script type="text/javascript">
+var isQrcode;
+function scanShow(){return{show: false,open() {
+    this.show = !this.show
+    var wait = document.getElementById('wait')
+    if(this.show === true){
+        http.post("{:url('index/wechatQrcode')}",(rel) =>{
+            $("#qrcode").qrcode({render: "canvas",text:rel.url});
+            $('#qrcode').removeClass('loading');
+        })
+        isQrcode = setInterval(function() {
+            var time = --wait.innerHTML;
+            if (time <= 0) {
+                clearInterval(isQrcode);
+                $('.outtime').text('已失效,点击二维码换新');
+            };
+            if(time%3 == 0){
+                http.post("{:url('index/checkWechatQrcode')}")
+            }
+        },1000);
+    }
+    if(this.show === false){
+        $('#wait').text('60');
+        $('#qrcode > canvas').remove();
+        clearInterval(isQrcode);
+    }
+}}}
+</script>
+{else}
+<script type="text/javascript">
+function scanShow(){return{show: false}}
+</script>
+{/if}
+{/block}

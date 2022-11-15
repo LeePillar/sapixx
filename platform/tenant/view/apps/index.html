@@ -1,0 +1,172 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="cols">
+    <div class="col col-sm-12 col-5">
+        <div class="card h120">
+            <div class="card-body">
+                <div class="tile tile-centered">
+                    <div class="tile-icon"><img src="{$apps.logo}" class="w70 w70 rounded img-responsive"></div>
+                    <div class="tile-content">
+                        <div class="text-dark">{$apps.title} <span class="text-tiny">v{$apps.app.config.var??'1.0.0'}</span></div>
+                        <div class="text-gray">{$apps.about}</div>
+                    </div>
+                    <div class="tile-action">
+                        <button class="btn win" url="{:url('apps/edit')}" outline primary icon><i class="icon bi-pencil icon-2x"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-sm-12 col-7">
+        <div class="card h120">
+            <div class="card-body cols">
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">应用类型{foreach $apps.app.config.types as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                        <li class="list-item">支付方式{foreach $apps.app.config.payment as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                        <li class="list-item">应用接入<span class="ml-16 status status-{$apps.app.config.is_open_wechat?'success':'error'}">{$apps.app.config.open_wechat_text}</span></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">开通时间<span class="ml-16 text-gray">{$apps.create_time}</span></li>
+                        <li class="list-item">更新时间<span class="ml-16 text-gray">{$apps.update_time}</span></li>
+                        <li class="list-item">到期时间<span class="ml-16 text-gray">{$apps.end_time|date='Y-m-d'}</span> <a href="{:url('account/appsRenewal',['id' => $apps->id])}" class="ml-8 tag tag-error">续期</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mt-16">
+    {if !isset($app.config.types['none'])}
+    <div class="card-header hide-lg">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-shuffle icon-2x mr-8"></i>接入终端</div>
+            <div class="col col-auto btn-group">
+                {if isset($app.config.types['web'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'web'])}">{$app.config.types['web']??'Web'}</a>{/if}
+                {if isset($app.config.types['app'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'app'])}">{$app.config.types['app']??'APP'}</a>{/if}
+                {if isset($app.config.types['wechatmp'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'wechatmp'])}" >{$app.config.types['wechatmp']??'公众号'}</a>{/if}
+                {if isset($app.config.types['wechatapp'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'wechatapp'])}" >{$app.config.types['wechatapp']??'小程序'}</a>{/if}
+                {if isset($app.config.types['alipayapp'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'alipayapp'])}">{$app.config.types['alipayapp']??'支付宝'}</a>{/if}
+                {if isset($app.config.types['douyinapp'])}<a primary outline class="btn" href="{:url('apps/clientConfig',['type' => 'douyinapp'])}">{$app.config.types['douyinapp']??'字节跳动'}</a>{/if}
+            </div>
+        </div>
+    </div>
+   <div class="card-body hide-lg">
+       <table class="table table-hover">
+           <thead><tr><th class="w140">接入终端</th><th class="w80">client_id</th><th class="w200">api_id</th><th>api_secret</th><th class="w160">AppID</th><th>AppSecret</th><th class="w140">配置</th></tr></thead>
+           <tbody>
+            {empty name="lists"}
+            <tr><td colspan="7"><div class="empty"><div class="empty-icon text-primary"><i class="icon bi-shuffle"></i></div><p class="empty-title text-bold">请创建/编辑接口</p><p class="empty-subtitle">你还没有创建任何第三方平台接入秘钥信息</p></div></td></tr>
+            {else /}
+            {foreach $lists as $vo}
+            <tr>
+               <td>
+                    <div class="tile tile-centered">
+                        <div class="tile-icon"><img class="w40 rounded img-responsive" src="{$vo.logo}"></div>
+                        <div class="tile-content"><div class="tile-title">{$vo.name}</div></div>
+                    </div>
+                </td>
+                <td>{$vo.id_code}</td>
+                <td>{$vo.api_id}</td>
+                <td>{$vo.api_secret}</td>
+                <td>{$vo.appid}</td>
+                <td>{:app('util')->msubstr($vo.secret?:'')}</td>
+                <td>
+                    <div class="btn-group">
+                    <a gray class="btn" href="{:url('apps/clientConfig',['type' => $vo.title])}">配置</a>
+                    {if $app.config.is_open_wechat}
+                        {if $vo.title == 'wechatapp'}
+                            {if $app.config.open_wechat_tpl_id >= 0}
+                                <a gray class="btn {$vo.config?'text-success':'text-error'}" href="{:url('wechat/wechatapp',['type' => $vo.title])}">{$vo.config?($vo.send?($app.config.open_wechat_tpl_id>$vo.send.tpl_id?'升级':'管理'):'发布'):'授权'}</a>
+                            {else}
+                                <a gray class="btn {$vo.config?'text-success':'text-error'}" href="{:url('wechat/wechatapp',['type' => $vo.title])}">授权</a>
+                            {/if}
+                        {/if}
+                        {if $vo.title == 'wechatmp'}<a gray class="btn {$vo.config?'text-success':'text-error'}" href="{:url('wechat/wechatmp',['type' => $vo.title])}">{:$vo.config?'管理':'授权'}</a>{/if}
+                    {else}
+                        <span disabled class="btn">授权</span>
+                    {/if}
+                    </div>
+                </td>
+           </tr>
+           {/foreach}
+           {/empty}
+            </tbody>
+       </table>
+   </div>
+   {/if}
+<!-- 判断是否显示支付配置 -->
+    <div class="card-header"><div class="space space-align-center text-bold"><i class="icon bi-credit-card icon-2x mr-8"></i>应用配置</div></div>
+    <div class="card-body">
+        <table class="table table-hover table-space">
+            <thead><tr><th>配置类型</th><th class="w80">配置</th></tr></thead>
+            <tbody>
+                {if $configs.is_wechatpay}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="__PUBLIC__/img/wepay.svg"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">微信支付</div>
+                                <div class="tile-subtitle text-gray">微信支付是微信线下场所、公众号、小程序、PC网站、APP、企业微信等经营场景的首选支付方式。</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="btn" href="{:url('apps/configWechatPay')}">配置</a></td>
+                </tr>
+                {if !empty($wechatpay) && $wechatpay.is_psp}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="__PUBLIC__/img/wechat.svg"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">微信服务商</div>
+                                <div class="tile-subtitle text-gray">微信支付服务商平台支持服务商为商家快速在线下场所、公众号、小程序、PC网站、APP等场景接入微信支付，同时服务商可为商家基于平台经营能力提供多样化的增值服务。</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="btn" href="{:url('apps/configWechatSp')}">配置</a></td>
+                </tr>
+                {/if}
+                {/if}
+                {if $configs.is_alipay}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="__PUBLIC__/img/alipay.svg"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">支付宝</div>
+                                <div class="tile-subtitle text-gray">支付宝，全球领先的独立第三方支付平台，致力于为广大用户提供安全快速的电子支付/网上支付/安全支付/手机支付体验，及转账收款/水电煤缴费/信用卡还款/AA收款等生活服务应用</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="btn" href="{:url('apps/configAlipay')}">配置</a></td>
+                </tr>
+                {/if}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="__PUBLIC__/img/img.svg"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">对象储存</div>
+                                <div class="tile-subtitle text-gray">支持阿里云OSS、腾讯云COS、七牛云Kodo三种对象存储服务,云提供全网加速CDN服务,对你的应用加载有非常明显的提速。</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="btn" href="{:url('apps/configStorage')}">配置</a></td>
+                </tr>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+    Do('base',function(){
+        $('.win').win({reload:true})
+    })
+</script>
+{/block}

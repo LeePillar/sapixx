@@ -1,0 +1,37 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header text-bold text-dark text-bold"><i class="icon bi-chat-dots mr-8"></i> 绑定微信</div>
+    <div class="card-body p-24">
+        <div id="qrcode" class="auto w260 auto c-hand loading tips tips-bottom" data-tips="点击换二维码"></div>
+        <div class="text-center text-gray outtime">倒计时 <b id="wait" class="text-error">60</b> 秒后失效</div>
+    </div>
+    <div class="card-footer text-center">微信扫一扫(关注公众号绑定)</div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('qrcode','http', function () {
+    NProgress.start()
+    http.post("{:url('account/bindWechatQrcode')}",(rel) =>{
+        $("#qrcode").qrcode({render: "canvas",text:rel.url,background:"#ffffff",foreground:"#333333"});
+        $('#qrcode').removeClass('loading');
+        NProgress.done()
+    })
+    var wait = document.getElementById('wait')
+    var interval = setInterval(function() {
+        var time = --wait.innerHTML;
+        if (time <= 0) {
+            clearInterval(interval);
+            $('.outtime').text('已失效,点击二维码换新');
+        };
+        if(time%3 == 0){
+            http.post("{:url('account/checkWechatQrcode')}")
+        }
+    },1000);
+    $('#qrcode').click(function(){
+        location.reload();
+    });
+});
+</script> 
+{/block}

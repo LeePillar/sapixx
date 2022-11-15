@@ -1,0 +1,59 @@
+{extend name="./layout" /}
+{block name="body"}
+<div class="layoutMain sun">
+    <div id="header" class="shadow-sm space space-align-center col">
+        <div class="col-auto"><div class="layoutLogo"></div></div>
+        <div class="col" x-data="showapp({$app?'false':'true'})" int>
+            <button @click="open" id="sidebar" class="btn" icon>
+                <template x-if="show"><i class="icon bi-house icon-3x"></i></template>
+                <template x-if="!show"><i class="icon bi-layout-sidebar icon-2x"></i></template>
+            </button>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown dropdown-right"> 
+                <a href="{:url('admin/admin/index')}" class="btn" target="iframe"><i class="icon bi-person-circle"></i> {$admin->username}</a>
+                <button type="button" class="btn dropdown-toggle" icon><i class="icon bi-caret-down-fill"></i></button>
+                <ul class="menu">
+                    <li class="menu-item"><a target="iframe" class="win" href="{:url('admin/index/password')}"><i class="icon bi-lock"></i> 修改密码</a></li>
+                    <li class="menu-item"><a target="_top" href="{:url('admin/index/logout')}"><i class="icon bi-power"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="menu" class="scrollbar"></div>
+    <div id="iframeBody"><iframe id="iframe" name="iframe" src="{:url('index/console')}"></iframe></div>
+</div>
+{/block}
+{block name="js"}{literal}
+<script id="menutpl" type="text/html">
+{{each data value}}
+<div class="accordion">
+    <input hidden type="checkbox" id="accordion-{{$index}}" name="accordion-checkbox" checked>
+    <label class="accordion-header c-hand text-bold" for="accordion-{{$index}}"><i class="icon bi-{{value.icon}} icon-2x"></i><span>{{value.name}}</span></label>
+    <div class="accordion-body">
+        <ul class="menu">{{each value.menu rs}}<li class="menu-item"><a target="iframe" href="{{rs.url}}" >{{rs.name}}</a></li>{{/each}}</ul>
+    </div>
+</div>
+{{/each}}
+</script>{/literal}
+<script type="text/javascript">
+Do('http',() => {
+    getMenu(0);
+})
+function showapp(show) {
+    return {show:show,open() {
+        if(show){
+            window.location.reload()
+        }else{
+            this.show = !this.show;
+            this.show === true? getMenu(1): getMenu(0);
+        }
+    }}
+}
+function getMenu(app) {
+    http.get("{:url('index/menu')}",{app:app},(rel) => {
+        $("#menu").html(template('menutpl',{data: rel.data}));
+    })
+}
+</script>
+{/block}

@@ -1,0 +1,110 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-body">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img src="{$info.logo}" class="w70 w70 rounded img-responsive"></div>
+            <div class="tile-content">
+                <div class="text-dark">{$info.title} <span class="text-tiny">v{$info.config.var??'1.0.0'}</span></div>
+                <div class="text-gray">{$info.about}</div>
+                {notempty name="$info.config.uri"}
+                <div class="text-gray">作者官网:<a href="{$info.config.uri}" target="_blank">{$info.config.uri}</a></div>
+                {/notempty}
+            </div>
+            {if !empty($info.config.is_admin)}
+            <div class="tile-action  btn-group">
+                <a class="btn" href="{:url('plugin/manage',['id' => $info->id])}" primary outline><i class="icon bi-layout-text-window-reverse"></i> 管理</a>
+            </div>
+            {/if}
+        </div>
+    </div>
+</div>
+<div class="card mt-16">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-link icon-2x mr-8"></i>绑定应用</div>
+            <div class="col col-auto"><button primary class="btn win" url="{:url('plugin/selectApp')}">选择应用</button></div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-space">
+            <thead><tr><th>应用名称</th><th class="w80">解除绑定</th></tr></thead>
+            <tbody>
+            {foreach $applist as $rs}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.logo}"></div>
+                            <div class="tile-content">
+                                <div class="text-dark">{$rs.title} <span class="text-tiny">v{$rs.config.var??'1.0.0'}</span></div>
+                                <div class="text-gray">{$rs.about}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a outline primary class="btn delBind" href="{:url('plugin/delBind',['app_id'=>$rs->id,'plugin_id' => $info.id])}">解除</a></td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card mt-16">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-menu-app icon-2x mr-8"></i>租户应用</div>
+            <div class="col col-auto btn-group btn-group-block">
+                <a pjax href="{:url('plugin/details',['id' => $Request.param.id,'types'=>0])}" class="btn" {$Request.param.types == 0?'primary':'outline'}>正常</a>
+                <a pjax href="{:url('plugin/details',['id' => $Request.param.id,'types'=>1])}" class="btn" {$Request.param.types == 1?'primary':'outline'}>锁定</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-space">
+            <thead><tr><th>应用名称</th><th class="w140">租户</th><th class="w70">状态</th><th class="w100">到期时间</th><th class="w120">创建时间</th><th class="w120">更新时间</th><th class="w40">设置</th></tr></thead>
+            <tbody>
+                {foreach $apps as $rs}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.apps.logo}"></div>
+                            <div class="tile-content">
+                                <div class="text-dark">{$rs.apps.title}</div>
+                                <div class="text-gray">{$rs.apps.about??''}</div>
+                            </div>
+                            <div class="tile-action">
+                                <a href="{:url('apps/toTanent',['id' => $rs->apps->id])}" target="_blank" class="btn tips tips-left" data-tips="管理租户应用"  outline primary icon><i class="icon bi-arrows-angle-expand"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a class="tile" href="{:url('tenant/details',['id' => $rs->tenant_id])}">
+                            <div class="tile-content">
+                                <p>{$rs.tenant.username}</p>
+                                <p><i class="bi bi-phone"></i> {$rs.tenant.phone_id}</p>
+                            </div>
+                        </a>
+                    </td>
+                    <td><a class="act status status-{$rs->apps->is_lock?'':'success'}" href="{:url('apps/islock',['id'=>$rs->apps->id])}" title="锁定/解锁">{$rs->apps->is_lock?'锁定':'正常'}</a></td>
+                    <td>{$rs.end_time}</td>
+                    <td>{$rs.create_time|date='Y-m-d H:i'}</td>
+                    <td>{$rs.update_time|date='Y-m-d H:i'}</td>
+                    <td><a class="link win" href="{:url('apps/edit',['id'=>$rs->apps->id])}">编辑</a></td> 
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.delBind').actUrl({is_delete:true})
+    $('.win').win({area:'50%'})
+    $('.act').actUrl({is_delete:true,text:'确认改变当前状态?'})
+})
+function setApp(ids) {
+    http.post("{:url('plugin/selectApp')}",{ids:ids,id:{$info.id}});
+}
+</script>
+{/block}

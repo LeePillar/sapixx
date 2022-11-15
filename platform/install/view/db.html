@@ -1,0 +1,25 @@
+
+<form id="form" class="form-horizontal" action="{:url('index/install')}">
+<table class="table table-border">
+    <thead><tr><th class="w100"></th><th>数据库配置</th></tr></thead>
+    <tbody>
+        <tr><td class="fn-tar">数据库类型:</td><td><input data-rule="required" type="text" class="form-input" name="DB_TYPE" value="mysql" id="DB_TYPE" disabled></td></tr>
+        <tr><td class="fn-tar">数据库主机:</td><td><input data-rule="required" type="text" class="form-input" name="DB_HOST" value="localhost" id="DB_HOST"></td></tr>
+        <tr><td class="fn-tar">数据库端口:</td><td><input data-rule="required" type="text" class="form-input" name="DB_PORT" value="3306" id="DB_PORT"></td></tr>
+        <tr><td class="fn-tar">数据库名称:</td><td><div class="text-gray mb-8">创建的数据库名称、仅支持英文</div><input data-rule="required" type="text" class="form-input" value="sapixx" name="DB_NAME"  id="DB_NAME"></td></tr>
+        <tr><td class="fn-tar">字符集:</td><td><input type="text" class="form-input" name="CHARSET" value="utf8mb4" id="DB_PREFIX" disabled></td></tr>
+        <tr><td class="fn-tar">表前缀:</td><td><input type="text" class="form-input" name="DB_PREFIX" value="ai_" id="DB_PREFIX" disabled></td></tr>
+        <tr><td class="fn-tar">用户名:</td><td><input data-rule="required" type="text" class="form-input" name="DB_USER" value="root" id="DB_USER"></td></tr>
+        <tr><td class="fn-tar">数据库密码:</td><td><input data-rule="required" type="password" class="form-input" name="DB_PWD" id="DB_PWD"></td></tr>
+        <tr><th colspan="2"><div class="toast toast-primary">管理地址： {$Think.DAMAIN}admin 帐号：admin 密码：123456</div></th></tr>
+        <tr><th colspan="2" class="fn-tac p10"><button type="submit" class="btn btn-block" primary>开始安装</button></th></tr>
+    </tbody>
+</table>
+</form>
+
+<script type="text/javascript">
+Do('form',function(){
+    NProgress.set(0.6); 
+    $('#form').isForm()
+})
+</script>

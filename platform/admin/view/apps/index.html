@@ -1,0 +1,73 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col"><a href="{:url('apps/add')}" class="btn" primary>开通应用</a></div>
+            <div class="col col-auto">
+                <form action="{:url('apps/index',['types' => $Request.param.types])}" class="input-group">
+                    <input name="keyword" type="text" class="form-input" value="{$Request.param.keyword}" placeholder="应用名称或手机号">
+                    <button type="submit" class="btn btn-primary input-group-btn" primary>搜索</button>
+                </form>
+            </div>
+            <div class="col col-auto btn-group btn-group-block">
+                <a pjax href="{:url('apps/index',['types'=>0])}" class="btn" {$Request.param.types == 0?'primary':'outline'}>正常</a>
+                <a pjax href="{:url('apps/index',['types'=>1])}" class="btn" {$Request.param.types == 1?'primary':'outline'}>过期</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-space">
+            <thead>
+                <tr>
+                    <th>应用名称</th>
+                    <th class="w140">租户</th>
+                    <th class="w70">状态</th>
+                    <th class="w100">到期时间</th>
+                    <th class="w120">创建时间</th>
+                    <th class="w100">更新时间</th>
+                    <th class="w40">设置</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach $list as $rs}
+                <tr>
+                    <td>
+                        <a class="tile tile-centered" href="{:url('apps/toTanent',['id' => $rs->id])}" target="_blank">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.logo}"></div>
+                            <div class="tile-content">
+                                <div class="text-dark">{$rs.title}</div>
+                                <div class="text-gray">{$rs.about??''}</div>
+                            </div>
+                            {if !$rs.is_lock}<div class="tile-action"><button class="btn tips tips-left is_admin" data-tips="管理租户应用"  outline primary icon><i class="icon bi-arrows-angle-expand"></i></button></div>{/if}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="tile" href="{:url('tenant/details',['id' => $rs->tenant_id])}">
+                            <div class="tile-content">
+                                <p>{$rs.tenant.username}</p>
+                                <p><i class="bi bi-phone"></i> {$rs.tenant.phone_id}</p>
+                            </div>
+                        </a>
+                    </td>
+                    <td><a class="act status status-{$rs.is_lock?'':'success'}" href="{:url('apps/islock',['id'=>$rs.id])}" title="过期/解锁">{$rs.is_lock?'过期':'正常'}</a></td>
+                    <td>{$rs.end_time|date='Y-m-d'}</td>
+                    <td>{$rs.create_time|date='Y-m-d H:i'}</td>
+                    <td>{$rs.update_time|date='Y-m-d'}</td>
+                    <td><a class="link win" href="{:url('apps/edit',['id'=>$rs.id])}">编辑</a></td> 
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <div class="{$list->hasPages()?'card-footer':'d-hide'}">{$list|raw}</div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.act').actUrl({is_delete:true,text:'确认改变当前状态?'})
+    $('.win').win({reload:true})
+})
+</script>
+{/block}

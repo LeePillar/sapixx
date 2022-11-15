@@ -1,0 +1,131 @@
+{extend name="./layout" /}
+{block name='style'}<style type="text/css">.ztree{max-height:600px;}</style>{/block}
+{block name="main"}
+<div class="cols">
+    <div class="col">
+        <div class="card">
+            <div class="card-header tab">
+                <div class="tab-item text-bold"><a href="{:url('acl/index')}">帐号管理</a></div>
+                <div class="tab-item text-bold active"><a href="{:url('acl/group')}">角色管理</a></div>
+            </div>  
+            <div class="card-body">
+                <form id="form" action="{:url('acl/groupEdit')}">
+                    <input type="hidden" name="id" value="{$info.id??0}" />
+                    <textarea class="d-none" name="menu">{$info.menu_text??''}</textarea>
+                    {if $rules}<textarea class="d-none" name="rules">{$info.rules_text??''}</textarea>{/if}
+                    <div class="form-group">
+                        <label class="form-label">角色名称</label>
+                        <div class="input-group"><input data-rule="required" class="form-input" type="text" name="title" value="{$info.title??''}" /></div>
+                    </div>
+                    {notempty name="rank"}
+                    <div class="form-group">
+                        <label class="form-label">角色等级</label>
+                        <div class="input-group">
+                            <select name="rank" class="form-select">
+                                {volist name="rank" id="vo"}<option value="{$vo.rank}" {:isset($info.rank) && $info.rank==$vo.rank?'selected':''}>{$vo.title}</option>{/volist}
+                            </select>
+                        </div>
+                    </div>
+                    {/notempty}
+                    <div class="form-group">
+                        <label class="form-label">角色描述</label>
+                        <div class="input-group"><textarea data-rule="required" class="form-input h100" name="remark">{$info.remark??''}</textarea></div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn" primary>确认保存</button>
+                    </div>
+                </form> 
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header cols">
+                <div class="col">菜单组</div>
+                <div class="col col-auto">
+                    <div class="btn-group btn-group-block">
+                        <button title="展开" onclick="allNode(true,'menu')"  class="btn btn-sm">展开</button>
+                        <button title="折叠" onclick="allNode(false,'menu')" class="btn btn-sm">折叠</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body"><ul id="menu" class="ztree scrollbar"></ul></div>
+        </div>
+    </div>
+    {if $rules}
+    <div class="col">
+        <div class="card">
+            <div class="card-header cols">
+                <div class="col">权限规则</div>
+                <div class="col col-auto">
+                    <div class="btn-group btn-group-block">
+                        <button title="展开" onclick="allNode(true,'rules')"  class="btn btn-sm">展开</button>
+                        <button title="折叠" onclick="allNode(false,'rules')" class="btn btn-sm">折叠</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body"><ul id="rules" class="ztree scrollbar"></ul></div>
+        </div>
+    </div>
+    {/if}
+</div>
+{/block}}
+{block name='js'}
+<script type="text/javascript">
+Do('form','http','ztree',() => {
+    NProgress.start()
+    $('#form').isForm();   
+    http.get("{:url('acl/menus',['id' => $info.id??0])}",(rel) =>{
+        $.fn.zTree.init($("#menu"),{
+            check: {enable: true},
+            view:{selectedMulti:false},
+            callback:{
+                beforeClick:(treeId,treeNode)=>{
+                    var zTree = $.fn.zTree.getZTreeObj("menu");
+                    zTree.checkNode(treeNode,!treeNode.checked, null, true);
+                    return false;
+                },onCheck:(e,treeId,treeNode) => {
+                    var treeObj = $.fn.zTree.getZTreeObj("menu"),nodes = treeObj.getCheckedNodes(true);
+                    var data = new Array()
+                    for (let item of nodes) {
+                        if (typeof item.rule != "undefined" && item.rule.length > 0) {
+                            data.push(item.rule)
+                        }
+                    }
+                    $("textarea[name='menu']").val(data.join("|"));
+                }
+            }
+        },rel.data);
+        allNode(true,'menu')
+    });
+    /**{if $rules}权限规则*/
+    http.get("{:url('acl/rules',['id' => $info.id??0])}",(rel) =>{
+        $.fn.zTree.init($("#rules"),{
+            check: {enable: true},
+            view:{selectedMulti:false},
+            callback:{
+                beforeClick:(treeId,treeNode)=>{
+                    var zTree = $.fn.zTree.getZTreeObj("rules");
+                    zTree.checkNode(treeNode,!treeNode.checked, null, true);
+                    return false;
+                },onCheck:(e,treeId,treeNode) => {
+                    var treeObj = $.fn.zTree.getZTreeObj("rules"),nodes = treeObj.getCheckedNodes(true);
+                    var data = new Array()
+                    for (let item of nodes) {
+                        if (typeof item.rule != "undefined" && item.rule.length > 0) {
+                            data.push(item.rule)
+                        }
+                    }
+                    $("textarea[name='rules']").val(data.join("|"));
+                }
+            }
+        },rel.data);
+        allNode(true,'rules')
+    });
+    /*{/if}权限规则*/
+});
+var allNode = (expandFlag,obj)=>{$.fn.zTree.getZTreeObj(obj).expandAll(expandFlag);NProgress.done()}
+</script>
+{/block}
+
+

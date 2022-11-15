@@ -1,0 +1,41 @@
+/* container */
+.ke-container-simple{display:block;border:1px solid var(--gray-3);border-radius:2px;background-color:#FFF;overflow:hidden}
+/* toolbar */
+.ke-container-simple .ke-toolbar{border-bottom:1px solid #fff;background-color:#f2f3f5;padding:4px 8px;overflow:hidden;border-radius:2px}
+.ke-toolbar .ke-separator{margin:8px 4px 0 4px}
+.ke-container-simple .ke-toolbar .ke-outline{border:1px solid transparent;background-color:transparent;border-radius:2px;margin:2px;padding:4px;font-size:0;line-height:0;overflow:hidden;cursor:pointer}
+.ke-container-simple .ke-toolbar .ke-on{border:1px solid var(--blue-6)}
+.ke-container-simple .ke-toolbar .ke-selected{border:1px solid #165dff;background-color:#e9eff6}
+.ke-container-simple .ke-toolbar .ke-disabled{cursor:default}
+/* statusbar */
+.ke-container-simple .ke-statusbar{position:relative;background-color:#FFF;border-top:1px solid var(--gray-3);font-size:0;line-height:0;*height:12px;overflow:hidden;text-align:center;cursor:s-resize}
+.ke-dialog-content{border:1px var(--gray-2) solid}
+.ke-dialog-header{color: var(--gray-8);}
+.ke-shadow{box-shadow: 0 8px 16px -3px rgb(0 0 0 / 0.15)}
+.ke-dialog-shadow{box-shadow: 0 8px 16px -3px rgb(0 0 0 / 0.15)}
+.ke-input-text{border:1px solid var(--gray-3);border-radius:2px;color:#1d2129;padding: 8px 8px;height:28px;font-size: 14px;line-height: 1.5715;background-image:none;outline:0;}
+.ke-dialog-header{height: 36px;padding:8px 16px;font-size: 14px;background:none;border-bottom:none}
+.ke-tabs{border-bottom: 1px solid var(--gray-3);padding-left:0px}
+.ke-tabs-li{border: 1px solid var(--gray-3);padding: 4px 8px;font-size: 14px;}
+.ke-tabs-li-selected{border-bottom: 1px solid #FFF;}
+.ke-upload-button{background:var(--gray-3);border-color:var(--gray-3);display:inline-block;cursor:pointer;text-align:center;border:none;line-height:1.5715;outline:0;}
+.ke-button{background: transparent;}
+.ke-dialog-body select{border-color:var(--gray-3);border-radius:2px;color:var(--gray-10);padding: 4px 8px;font-size: 14px;line-height: 1.5715;outline:0;vertical-align:middle;}
+.ke-dialog-body label{font-size: 14px;}
+.ke-dialog-footer{background: transparent;padding:0px 10px 10px 10px}
+.ke-button-common{background:var(--gray-3);color:var(--gray-10);border-color:transparent;height:28px;font-size: 14px;}
+.ke-dialog-icon-close{top:10px;right:20px;}
+.ke-upload-area .ke-upload-file{width:60px;height: 28px;}
+.ke-content{font-size: 14px;}
+.ke-swfupload-body{border: 1px var(--gray-4) solid;overflow:hidden;overflow-y: auto;}
+/* menu */
+.ke-menu-simple{border:1px solid var(--gray-3);background-color:#FFF;color:#222;padding:2px;font-family:"sans serif",tahoma,verdana,helvetica;font-size:12px;text-align:left;overflow:hidden}
+.ke-menu-simple .ke-menu-item{border:1px solid #FFF;background-color:#FFF;color:#222;height:32px;overflow:hidden;cursor:pointer}
+.ke-menu-simple .ke-menu-item-on{background-color:#f2f3f5}
+.ke-colorpicker-simple{border:1px solid #a0a0a0;background-color:#fefefe;color:#222;padding:2px}
+.ke-colorpicker-simple .ke-colorpicker-cell{font-size:0;line-height:0;border:1px solid #fefefe;cursor:pointer;margin:3px;padding:0}
+.ke-colorpicker-simple .ke-colorpicker-cell-top{font-family:"sans serif",tahoma,verdana,helvetica;font-size:12px;line-height:24px;border:1px solid #fefefe;cursor:pointer;margin:0;padding:0;text-align:center}
+.ke-colorpicker-simple .ke-colorpicker-cell-on{border:1px solid #5690d2}
+.ke-colorpicker-simple .ke-colorpicker-cell-selected{border:1px solid var(--blue-6)}
+/*图标*/
+.ke-icon-insertimages {background-position: 0px -1232px;width: 16px;height: 16px;}

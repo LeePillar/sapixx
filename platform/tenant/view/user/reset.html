@@ -1,0 +1,36 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card mb-8">
+    <div class="card-body">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="{$info.face}"></div>
+            <div class="tile-content">
+                <div class="tile-title">{$info.nickname}</div>
+                <small class="tile-subtitle">{if $info.phone}<span class="text-primary"><i class="icon bi-phone"></i>{$info.phone}</span>{/if}</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <form id="form" action="{:url('user/reset')}">
+    <div class="card-body h350">
+        <input type="hidden" name="uid" value="{$Request.param.id}" />
+        <div class="form-group">
+            <label class="form-label">移动到用户</label>
+            <select id="invite" name="invite" class="form-select" data-placeholder="请选择用户"></select>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-block" primary outline/>确定信息</button>
+    </div>
+    </form>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('form','select',() => {
+    $('#form').isForm();
+    $('#invite').selectUser();
+});
+</script>
+{/block}

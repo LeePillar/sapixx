@@ -1,0 +1,4 @@
+.webuploader-container {position: relative;}
+.webuploader-element-invisible {position: absolute!important;clip: rect(1px 1px 1px 1px); clip: rect(1px,1px,1px,1px);display: none;}
+.webuploader-pick {position: relative;display: inline-block;cursor: pointer;padding: 0px 16px;text-align: center;border-radius:2px;overflow: hidden;margin: 0px -16px;}
+.webuploader-pick-disable{opacity: 0.6;pointer-events:none;}

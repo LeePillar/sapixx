@@ -1,0 +1,89 @@
+{extend name="./layout" /}
+{block name='style'}
+<style type="text/css">
+    .tile-icon{position: relative;}
+    .tile-icon .btn{position: absolute;left:0px;bottom:0px;opacity:.8;}
+</style>
+{/block}
+{block name='main'}
+<div class="card" x-data="{title:'{$info.title??''}',about:'{$info.about??($info.config.about??'')}'}">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon w70 h70">
+                <img class="w70 rounded img-responsive logo" src="{$info.logo??'__STATIC__/offline.png'}">
+                <button type="button" class="btn btn-sm" id="logo" gray icon><i class="icon bi-pencil"></i></button>
+            </div>
+            <div class="tile-content">
+                <div class="text-dark"><sapn x-text="title">{$info.title??'应用名称'}</sapn> <span class="text-tiny">v{$info.config.var??'1.0.0'}</span></div>
+                <div class="text-gray" x-text="about">{$info.about??($info.config.about??'应用简介')}</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('app/edit')}">
+            <input type="hidden" name="logo" value="{$info.logo??''}"/>
+            <input type="hidden" name="id" value="{$info.id??0}" />
+            <div class="form-group">
+                <label class="form-label">应用目录 <span class="text-gray text-tiny">禁止修改</span></label>
+                <div class="input-group">
+                    <label class="input-addon">app /</label>
+                    <input name="appname" class="form-input" data-rule="required;letters" type="text" value="{$info.appname??''}" {$info.id?'disabled':''}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用名称</label>
+                <input name="title" class="form-input" data-rule="required" type="text" value="{$info.title??''}" x-model="title">
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用简述</label>
+                <textarea autocomplete="off" data-rule="required" class="form-input h60" type="text" name="about" x-model="about"/>{$info.about??($info.config.about??'')}</textarea>
+            </div>
+            <div class="form-group" >
+                <label class="form-label">免费体验(天)</label>
+                <div class="input-group">
+                    <label class="input-addon">天</label>
+                    <input class="form-input" data-rule="required;digits" type="text" name="expire_day" value="{$info.expire_day??''}" />
+                </div>
+            </div>
+            <div class="form-group" >
+                <label class="form-label">购买价格(365天)</label>
+                <div class="input-group">
+                    <label class="input-addon">￥</label>
+                    <input class="form-input" data-rule="required;npot" type="text" name="price" value="{$info.price??''}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">体验二维码</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="qrcode" value="{$info.qrcode??''}"/>
+                    <button type="button" class="btn" id="qrcode" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用展示 <span class="text-tiny text-gray">最多上传6张素材，单张图片需限制在1M以内。</span></label>
+                {tag:imgs id="theme" name="$info.theme" num="6" /}
+            </div>
+            <div class="form-group mt-16">
+                <button type="submit" class="btn" primary>确认</button>
+                <button type="reset" class="btn" >重置</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('form','upload',function () {
+    $('#form').isForm();
+    var upload = "{:url('common/upload')}";
+    $('#qrcode').upload({multiple:false,uri:upload},(rel)=>{
+        $("input[name='qrcode']").val(rel.url)
+    });
+    $('#logo').upload({multiple:false,uri:upload},(rel)=>{
+        $("input[name='logo']").val(rel.url)
+        $(".logo").attr("src",rel.url);
+    });
+    $('#theme').multUpload({uri:upload});
+});
+</script> 
+{/block}

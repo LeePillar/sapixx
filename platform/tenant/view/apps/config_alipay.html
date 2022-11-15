@@ -1,0 +1,76 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="__PUBLIC__/img/alipay.svg"></div>
+            <div class="tile-content">
+                <div class="tile-title">支付宝</div>
+                <div class="tile-subtitle text-gray">支付宝，全球领先的独立第三方支付平台，致力于为广大用户提供安全快速的电子支付/网上支付/安全支付/手机支付体验，及转账收款/水电煤缴费/信用卡还款/AA收款等生活服务应用</div>
+            </div>
+        </div>
+    </div>
+    <div class="toast toast-warning">
+        <p>1、只有在微信支付配置中启用服务商模式,当前服务商配置才有效。</p>
+        <p>2、支付不涉及退款、付款到零钱等业务的为了支付安全不建议上传证书。</p>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('apps/configAlipay')}">
+            <div class="form-group">
+                <label class="form-label">APPID(应用ID)</label>
+                <input class="form-input" type="text" name="appid" value="{$info.appid??''}" data-rule="required"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用公钥</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="cert" value="{$info.cert??''}" data-rule="required"/>
+                    <button type="button" class="btn" id="cert" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用私钥</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="certkey" value="{$info.certkey??''}" data-rule="required"/>
+                    <button type="button" class="btn" id="certkey" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">支付宝公钥</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="alipaycert" value="{$info.alipaycert??''}" data-rule="required"/>
+                    <button type="button" class="btn" id="alipaycert" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">支付宝根证书</label>
+                <div class="input-group">
+                    <input readonly autocomplete="off" class="form-input" type="text" name="alipayrootcert" value="{$info.alipayrootcert??''}" data-rule="required"/>
+                    <button type="button" class="btn" id="alipayrootcert" gray><i class="icon bi-upload"></i> 上传</button>
+                </div>
+            </div>
+            <div class="form-group mt-24">
+                <button type="submit" class="btn" primary>保存配置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+    Do('form','upload',function () {
+        $('#form').isForm();
+        $('#cert').upload({multiple:false,private:true},(rel)=>{
+            $("input[name='cert']").val(rel.url)
+        });
+        $('#certkey').upload({multiple:false,private:true},(rel)=>{
+            $("input[name='certkey']").val(rel.url)
+        });
+        $('#alipaycert').upload({multiple:false,private:true},(rel)=>{
+            $("input[name='alipaycert']").val(rel.url)
+        });  
+        $('#alipayrootcert').upload({multiple:false,private:true},(rel)=>{
+            $("input[name='alipayrootcert']").val(rel.url)
+        }); 
+    });
+</script>
+{/block}

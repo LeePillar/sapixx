@@ -1,0 +1,42 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header tab">
+        <div class="tab-item text-bold active"><a href="{:url('acl/index')}">帐号管理</a></div>
+        <div class="tab-item text-bold"><a href="{:url('acl/group')}">角色管理</a></div>
+        <div class="col"><a href="{:url('acl/edit')}" class="btn text-light f-right" primary>创建子帐号</a></div>
+    </div>
+    <div class="card-body">
+<table class="table table-hover">
+    <thead>
+        <tr><th class="w140">手机号(登录ID)</th><th class="w120">角色</th><th class="w120">等级</th><th>昵称</th><th class="w70">状态</th><th class="w120">创建时间</th><th class="w120">最后访问</th><th class="w80">操作</th></tr>
+    </thead>
+    <tbody>
+        {foreach $list as $vo}
+        <tr>
+            <td><i class="bi bi-phone text-large"></i> {$vo.phone_id}</td>
+            <td>{$vo.group.title}</td>
+            <td>{$vo.group.rank_text}</td>
+            <td>{$vo.username}</td>
+            <td><a class="act status status-{$vo.is_lock?'':'success'}" href="{:url('acl/islock',['id'=>$vo.id])}" title="锁定/正常">{$vo.is_lock?'锁定':'正常'}</a></td>
+            <td>{$vo.create_time|date='Y-m-d H:i'}</td>
+            <td>{$vo.update_time|date='Y-m-d H:i'}</td>
+            <td>
+                <a class="link" href="{:url('acl/edit',['id'=>$vo.id])}">编辑</a>
+                <a class="link actDel" href="{:url('acl/delete',['id'=>$vo.id])}">删除</a>
+            </td>
+        </tr>
+ {/foreach}</tbody>
+</table>
+</div>
+<div class="{$list->hasPages()?'card-footer':'d-hide'}">{$list|raw}</div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.act').actUrl({text:'确认改变当前状态?'})
+    $('.actDel').actUrl({is_delete:true})
+})
+</script>
+{/block}

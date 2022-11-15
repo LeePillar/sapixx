@@ -1,0 +1,134 @@
+{extend name="./layout" /}
+{{block name='style'}
+<style type="text/css">
+.qrcode{position:absolute;top:-204px;right: 0px;z-index:1;background-color: var( --color-white);border: 1px var(--gray-2) solid;width:202px;height: 202px;}
+.qrcode img{width:200px;height: 200px;}
+</style>
+{/block}}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile">
+            <div class="tile-icon"><img src="{$apps.logo}" class="w50 w50 rounded img-responsive"></div>
+            <div class="tile-content">
+                <div class="text-dark">{$apps.title} <span class="text-tiny">v{$apps.app.config.var??'1.0.0'}</span></div>
+                <div class="text-gray">{$apps.about}</div>
+            </div>
+            <div class="tile-action btn-group">
+                <button class="btn" outline warning>{$send.state_text??'待发布'}</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-header">
+        <div class="empty">
+            <div class="empty-icon text-center"><svg t="1647145333440" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18970" width="60" height="60"><path d="M844.8 620.5184v-55.9616c75.8016-37.7088 128-115.7376 128-206.1568a230.4 230.4 0 0 0-230.4-230.4c-127.2576 0-234.496 103.2192-230.4 230.4 3.968 123.008 54.7584 225.3056 51.2 307.2-6.7584 155.3664-126.08 281.6-281.6 281.6S0 821.12 0 665.6c0-120.7808 76.1856-223.488 182.9888-263.5008A153.2416 153.2416 0 0 0 179.2 435.2v24.2432C103.3984 497.152 51.2 575.1808 51.2 665.6a230.4 230.4 0 0 0 230.4 230.4c127.2576 0 214.1184-98.0992 230.4-230.4 9.1392-74.1632-43.264-184.32-50.8416-314.4448C455.9616 199.8848 589.312 76.8 742.4 76.8c155.52 0 281.6 126.08 281.6 281.6 0 119.3472-74.368 221.1072-179.2 262.1184z" fill="#07c160" p-id="18971"></path><path d="M691.2 819.2h204.8v51.2h-204.8z" fill="#07c160" p-id="18972"></path></svg></div>
+            <p class="empty-title text-bold">授权或创建小程序</p>
+            <div class="empty-subtitle toast">
+                <p>1、在授权小程序之前,请先在微信公众平台创建一个小程序。</p>
+                <p>2、如没有小程序可以点击"申请小程序",10分钟快速申请个自己的小程序。</p>
+                <p>3、重复授权的小程序和原授权非同一个的,原用户帐号同步失效,切需重新提交审核发布。</p>
+                <p>4、有些小程序需要一些特殊权限的(如定位服务),需登录官方“微信公众平台”申请。</p>
+            </div>
+            <div class="btn-group">
+                <a class="btn" href="{:url('tenant/wechat/authorize',['type' => 2])}" primary>{$info.config?'更新小程序授权':'小程序授权'}</a>
+                {if $app.config.open_wechat_tpl_id >= 0}<button outline type="button" class="btn updateSetting" url="{:url('tenant/wechat/updateSetting')}"><i class="icon bi-arrow-repeat"></i> 同步小程序信息</button>{/if}
+            </div>
+        </div>
+    </div>
+    {if $app.config.open_wechat_tpl_id >= 0}
+    <div class="card-body" x-data="actionApp()">
+        {if !empty($send.reason)}<div class="toast toast-error"><i class="icon icon-2x bi-question-square mr-8"></i> {$send.reason}</div>{/if}
+        <div class="cols">
+            <div class="col col-3 col-xl-6">
+                <div class="bg-primary-light rounded p-16 mb-8 mt-8">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>1</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">服务器域名</div>
+                            <div class="text-gray">小程序基本信息请到微信公众平台设置,本平台仅支持设置访问域名。</div>
+                            <div class="text-gray mt-8 btn-group">
+                                <a class="btn" href="https://mp.weixin.qq.com" target="_blank" outline success><i class="icon bi-chat-dots"></i> 小程序官网</a>
+                                <button outline {$info.appid?'primary':'disabled'} type="button" class="btn act" url="{:url('tenant/wechat/setDomain')}"><i class="icon bi-link-45deg"></i> 设置域名</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3 col-xl-6">
+                <div class="bg-{:isset($send.is_commit)?'primary-light':'gray-light'} rounded p-16 mb-8 mt-8">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>2</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">上传代码</div>
+                            <div class="text-gray">上传最新代码到微信公共平台,无需提交审核可扫码体验小程序。</div>
+                            <div class="text-gray mt-8 btn-group p-relative">
+                                <button {:isset($send.is_commit)?'':'disabled'} class="btn act" href="{:url('tenant/wechat/updataCode')}" outline primary><i class="icon bi-upload"></i> 上传代码</button>
+                                <button {:isset($send.is_commit)?'':'disabled'} class="btn" @click="scan" outline primary><i class="icon bi-qr-code-scan"></i> 扫码体验</button>
+                                <div class="qrcode round shadow-xl" x-show="show" @click="show = false" x-html="qrcode" x-transition.duration.300ms></div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3 col-xl-6">
+                <div class="bg-gray-light rounded p-16 mb-8 mt-8">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>3</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">微信审核</div>
+                            <div class="text-gray">提交审核后,管理员微信会收到推送的审核结果,最快的几个小时,一般在3天内。</div>
+                            <div class="text-gray mt-8 btn-group">
+                                <button {if isset($send.is_commit) && $send.is_commit!=1}disabled{/if} class="btn win" url="{:url('tenant/wechat/submitWechat')}" outline primary><i class="icon bi-hourglass-bottom"></i> 提交审核</button>
+                                <button {if isset($send.is_commit) && $send.is_commit!=2}disabled{/if} class="btn undocodeaudit" url="{:url('tenant/wechat/undocodeaudit')}" outline primary><i class="icon bi-backspace"></i> 撤回审核</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3 col-xl-6">
+                <div class="bg-gray-light rounded p-16 mb-8 mt-8">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>4</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">发布应用</div>
+                            <div class="text-gray">审核失败的,请注意查看审核通知.根据通知修改后,再重新提交审核。</div>
+                            <div class="text-gray mt-8">
+                                {if isset($send.is_commit)}
+                                    {if $send.is_commit == 2 && $send.state == 0}
+                                        <button class="btn act" href="{:url('tenant/wechat/release')}" outline primary><i class="icon icon-x bi-send"></i> 发布小程序</button>
+                                    {else}
+                                        <button disabled class="btn" outline primary>{$send.is_commit == 2 && $send.state == 1?'发布审核中':'发布小程序'}</button>
+                                    {/if}
+                                {else}
+                                    <button disabled class="btn" outline primary>发布小程序</button>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.win').win({reload:true})
+    $('.act').actUrl({post:true})
+    $('.updateSetting').actUrl({post:true,content:'确认同步',text:'同步小程序的名称、Logo和简介'})
+    $('.undocodeaudit').actUrl({post:true,content:'撤回审核',text:'每天仅允许2次撤回审核'})
+})
+function actionApp(){return {
+    show: false,
+    qrcode:"",
+    scan(){
+        this.show = !this.show
+        if(this.show ){
+            this.qrcode = "<img class='img-width' src='{:url('tenant/wechat/getQrcode')}'>"
+        }
+    }
+}}
+</script>
+{/block}

@@ -1,0 +1,61 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="__PUBLIC__/img/img.svg"></div>
+            <div class="tile-content">
+                <div class="tile-title">对象储存</div>
+                <div class="tile-subtitle text-gray">支持阿里云OSS、腾讯云COS、七牛云Kodo三种对象存储服务,云提供全网加速CDN服务,对你的应用加载有非常明显的提速。</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+    <form id="form" action="{:url('apps/configStorage')}">
+            <div class="form-group">
+                <label class="form-label">对象储存</label>
+                <select class="form-select" data-rule="required" name="driver">
+                    <option value="default" {:isset($info.driver) && $info.driver == 'default'?'selected':''}>默认方式</option>
+                    <option value="aliyun" {:isset($info.driver) && $info.driver == 'aliyun'?'selected':''}>阿里云</option>
+                    <option value="qiniu" {:isset($info.driver) && $info.driver == 'qiniu'?'selected':''}>七牛云</option>
+                    <option value="qcloud" {:isset($info.driver) && $info.driver == 'qcloud'?'selected':''}>腾讯云</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">endpoint/region <span class="text-tiny text-gray">腾讯云/阿里云需要,七牛云随意填写</span></label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="endpoint" value="{$info.endpoint??''}"/>
+            </div>    
+             <div class="form-group">
+                <label class="form-label">appId <span class="text-tiny text-gray">腾讯云需要(域名中数字部分),其它云随意填写</span></label>
+                <input autocomplete="off" data-rule="required;digits" class="form-input" type="text" name="appid" value="{$info.appid??''}"/>
+            </div>                      
+            <div class="form-group">
+                <label class="form-label">accessId/accessKey/aes_key</label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="aes_key" value="{$info.aes_key??''}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">secret/secretKey</label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="secret" value="{$info.secret??''}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bucket</label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="bucket" value="{$info.bucket??''}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Url <span class="text-tiny text-gray">最后不添加 "/"</span></label>
+                <input autocomplete="off" data-rule="required;http" class="form-input" type="text" name="url" value="{$info.url??''}"/>
+            </div>
+            <div class="form-group mt-24">
+                <button type="submit" class="btn" primary>保存配置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('form',function () {
+    $('#form').isForm();
+});
+</script>
+{/block}

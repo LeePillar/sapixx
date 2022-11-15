@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="applicable-device" content="mobile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>{$title}</title>
+{load href="__PUBLIC__/system.css" /}
+<style type="text/css">
+.empty{background: none;}
+</style>
+</head>
+<body>
+    <div class="docs-content bg-white s-rounded">
+    <div class="empty">
+<div class="mb-16">
+{if $code == 200}
+<svg t="1647172443076" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5484" width="60" height="60"><path d="M511.872032 1024a511.872032 511.872032 0 1 1 511.872032-511.872032 511.872032 511.872032 0 0 1-511.872032 511.872032z m-114.147463-310.962259a53.490627 53.490627 0 0 0 75.501125 0l323.247188-323.247189a53.490627 53.490627 0 0 0-75.501125-76.780804L433.043739 597.610597l-127.968008-127.968008a53.490627 53.490627 0 1 0-76.780805 75.501125z" fill="#41CC8B" p-id="5485"></path></svg>
+{else}
+<svg t="1647172652275" class="icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3890" width="60" height="60"><path d="M0 512A512 512 0 1 0 512 0 512 512 0 0 0 0 512z" fill="#FF8040" p-id="3891"></path><path d="M513.28 819.2a55.552 55.552 0 0 1 0-110.336 55.552 55.552 0 0 1 0 110.336z m0-179.2c-17.664 0-32.256-32.768-32.256-73.216L449.024 236.8A69.12 69.12 0 0 1 512 163.584a69.376 69.376 0 0 1 64.256 73.216l-31.232 329.728c0.256 40.448-14.08 73.472-31.744 73.472z" fill="#FFFFFF" p-id="3892"></path></svg>
+{/if}
+</div>
+    <p class="empty-title text-bold text-small">{$title}</p>
+    <p class="empty-subtitle"><?php
+        if(isset($msg)){
+            echo(strip_tags($msg));
+        }
+        else if(isset($message)){
+            echo nl2br(htmlentities($message)); 
+        }else{
+            echo $title;
+        }
+    ?></p>
+    <div class="empty-action btn-group"><a class="btn" href="<?php if(empty($url)){echo '/';}else{echo $url;}?>">返回</a></div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card mb-8">
+    <div class="card-body">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="{$info.face}"></div>
+            <div class="tile-content">
+                <div class="tile-title">{$info.nickname}</div>
+                <small class="tile-subtitle"><span class="text-primary"><i class="icon bi-phone"></i>{$info.as_phone}</span></small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form class="form-horizontal" id="form" action="{:url('user/edit')}">
+            <input type="hidden" name="id" value="{$info.id}" />
+            <div class="form-group">
+                <label class="form-label">手机号</label>
+                <input class="form-input" data-rule="required:mobile" type="number" name="phone" value="{$info.phone}" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">登录密码</label>
+                <input class="form-input" data-rule="密码:length(6~)" type="text" name="password" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">安全密码</label>
+                <input class="form-input" data-rule="密码:length(6~)" type="number" name="safepassword" />
+            </div>
+            <div class="form-group mt-16">
+                <button type="submit" class="btn" primary >确定修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+    Do('form',function () {
+        $('#form').isForm();
+    });
+</script>
+{/block}

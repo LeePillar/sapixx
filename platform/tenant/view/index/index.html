@@ -1,0 +1,116 @@
+{extend name="./layout" /}
+{block name="body"}
+<div class="layoutBar {$is_siderbar?'show':'hide'}" x-data="changeBar()">
+    <div class="layoutConsole"><img src="{$apps.logo??''}" class="w50 h50 rounded img-fit-cover"></div>
+    <div class="layoutNav"></div>
+</div>
+<div class="layoutMain {$is_siderbar?'sun show':'moon'}" x-data="changeApp()">
+    <div id="header" class="space space-align-center cols col-gapless">
+        <div class="col-auto"><div class="layoutLogo"></div></div>
+        <div class="col">
+            <div class="btn-group change-app-btn">
+                {if !$tenant->parent_id}
+                <a href="javascript:;" class="btn" @click="open"><i class="icon icon-2x bi-ui-checks-grid"></i></a>
+                {/if}
+                <a href="{:url('tenant/index/index')}" target="_top" class="btn hide-xs"><i class="icon icon-2x bi-house mr-4"></i><span class="hide-sm">控制台</span></a>
+                {if !$tenant->parent_id}
+                <a href="{:url('tenant/store/index')}" target="iframe" class="btn hide-xs"><i class="icon icon-2x bi-bag-plus mr-4"></i><span class="hide-sm">应用商店</span></a>
+                <div class="change-app round shadow" x-show="show" @click="show = false" x-transition.duration.300ms></div>
+                <div class="change-app-shade" x-show="show" @click="show = false" ></div>
+                {/if}
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown dropdown-right space btn-group account"> 
+                <a href="{:url('tenant/account/index')}" class="btn hide-xs" target="iframe"><i class="icon icon-2x bi-person-circle mr-4"></i>{$tenant.username}</a>
+                <button type="button" class="btn dropdown-toggle" icon><i class="icon icon-2x bi-caret-down-fill"></i></button>
+                <ul class="menu">
+                    <li class="menu-item"><a target="iframe" class="win" href="{:url('account/index')}"><i class="icon bi-person mr-4"></i>帐号中心</a></li>
+                    <li class="menu-item"><a target="iframe" class="win" href="{:url('account/password')}"><i class="icon bi-key mr-4"></i>修改密码</a></li>
+                    <li class="menu-item"><a target="_top" href="{:url('tenant/index/logout')}"><i class="icon bi-power mr-4"></i>退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="menu" class="scrollbar"></div>
+    <div id="iframeBody"><iframe title="body" id="iframe" name="iframe" src="{:url('tenant/index/welcome')}"></iframe></div>
+</div>
+{/block}
+{block name="js"}
+{literal}<script id="menutpl" type="text/html">
+{{each data value}}
+<div class="accordion">
+    <input hidden type="checkbox" id="accordion-{{$index}}" name="accordion-checkbox" {{$index == 0? 'checked':''}}>
+    <label class="accordion-header c-hand text-bold" for="accordion-{{$index}}"><i class="icon bi-{{value.icon}}"></i><span>{{value.name}}</span></label>
+    <div class="accordion-body">
+        <ul class="menu">{{each value.menu rs}}<li class="menu-item"><a target="iframe" href="{{rs.url}}">{{rs.name}}</a></li>{{/each}}</ul>
+    </div>
+</div>
+{{/each}}
+</script>
+<script id="siderbar" type="text/html">
+<ul class="space space-vertical space-justify-center">
+    {{each data rs}}
+    <li @click="sider('{{rs.anchor}}')" :class="menu=='{{rs.anchor}}'?'focus':'hidden'"><i class="icon icon-1x bi-{{rs.icon}}"></i><p>{{rs.name}}</p></li>
+    {{/each}}
+</ul>
+</script>
+<script id="change-app" type="text/html">
+{{if data.length}}
+<div class="cols col-gapless">
+{{each data value}}
+    <div class="col col-3 p-8 text-center link rounded" @click="manage({{value.id}})">
+        <img src="{{value.logo}}" class="w60 h60 rounded img-fit-cover">
+        <p class="pt-4 text-gray">{{value.title}}</p>
+    </div>
+{{/each}}
+</div>
+{{else}}
+<div class="empty">
+    <div class="empty-icon text-primary"><i class="icon bi-menu-app"></i></div>
+    <p class="empty-title text-bold">没有应用</p><p class="empty-subtitle text-tiny">你还没有开通任何应用,现在去开通</p>
+    <p class="empty-title mt-16"><a class="btn" href="{{url}}" target="iframe" primary>开通应用</a></p>
+</div>
+{{/if}} 
+</script>{/literal}
+<script type="text/javascript">
+Do('http',() => {
+    NProgress.configure({speed:600});NProgress.start();NProgress.done() 
+    getMenu('tenant');
+    siderbar();
+})
+</script>
+<script type="text/javascript">
+var getMenu=(menu)=>{
+    http.get("{:url('tenant/index/menu')}",{menu:menu}, (rel) => {
+        $("#menu").html(template('menutpl',{data: rel.data}));
+    }
+)}
+var siderbar=(menu)=>{
+    http.get("{:url('tenant/index/siderbar')}",(rel) => {if(rel.data.length){
+        $(".layoutNav").html(template('siderbar',{data: rel.data}));
+        $(".layoutBar").animate({left:0}).show();
+    }})
+}
+var changeApp=()=>{return {
+    show:false,
+    open(){
+        this.show = !this.show
+        if(this.show === true){
+            http.get("{:url('account/apps')}",(rel) =>{
+                $(".change-app").html(template('change-app',{data:rel.data,url:'{:url("tenant/store/index")}'}));
+            })
+        }
+    },manage(id){
+        http.get("{:url('account/manage')}?id="+id)
+    }
+}}
+var changeBar=()=>{return {
+    menu:'tenant',
+    sider(menu) {
+        this.menu = menu
+        getMenu(menu);
+    }
+}}
+</script>
+{/block}

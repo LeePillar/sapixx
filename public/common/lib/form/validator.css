@@ -1,0 +1,10 @@
+.validator-validator input,.validator-validator select,.validator-validator textarea,.validator-validator [contenteditable],.validator-wrap,.validator-icon,.validator-msg{display:inline-block;}
+.validator-validator .validator-container .validator-box{display:block}
+.validator-validator .validator-container .validator-wrap{position:static}
+.validator-box{position:relative;line-height: 1.5715;padding: 4px 0px;}
+.validator-wrap{position:relative;white-space:nowrap;font-size:14px;z-index:1}
+.validator-error{color:#FF7D00}
+.validator-invalid{border-color:#FF7D00!important;background: #fffaf7!important;}
+/* .validator-pass{border-color:#32b643!important;background: #f9fdfa!important;} */
+.form-horizontal .validator-right .validator-wrap,.input-group .validator-right .validator-wrap{position: absolute;white-space:nowrap;right:100%;margin-right:8px;}
+.validator-ok{color:#32b643}

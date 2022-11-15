@@ -1,0 +1,86 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img src="{$web.logo}" class="rounded img-responsive"></div>
+            <div class="tile-content">
+                <div class="text-dark">{$web.title}</div>
+                <div class="text-gray">{$web.subtitle}</div>
+            </div>
+            <div class="tile-action btn-group">
+                <a class="btn" href="{:url('license/licenseUrl')}" target="_blank" primary>创建密钥</a>
+                <a class="btn" href="{$Think.BASEURI}/apixx" target="_blank" primary outline>授权中心</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-header text-bold "><i class="icon bi-info-square icon-2x mr-8"></i>接入能力</div>
+    <div class="card-body cols">
+            <div class="col col-3">
+                <div class="bg-gray-light rounded p-16">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" success outline icon circle>1</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">授权密钥</div>
+                            <div class="text-gray">秘钥仅用于检测新版本、接入应用盒子(客机无需安装,既可代理你的应用)使用.</div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3">
+                <div class="bg-gray-light rounded p-16">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" success outline icon circle>2</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">创建秘钥</div>
+                            <div class="text-gray">点击「创建秘钥」进入SAPI++授权中心,点击「创建/同步秘钥」按钮</div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3">
+                <div class="bg-gray-light rounded p-16">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>3</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">应用盒子</div>
+                            <div class="text-gray">获得秘钥后,可以把自己的应用接入应用盒子,让代理替你销售。</div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="col col-3">
+                <div class="bg-gray-light rounded p-16">
+                    <div class="tile">
+                        <div class="tile-icon"><button type="button" class="btn" primary outline icon circle>4</button></div>
+                        <div class="tile-content">
+                            <div class="text-dark">集中管理</div>
+                            <div class="text-gray">SAPI++提供主机端和客机端的分布式部署计算能力,不同的客机端安装不同的应用。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+ </div>
+<div class="card mt-16">
+    <div class="card-header"><i class="icon bi-code-square icon-2x mr-8"></i> 应用信息</div>
+    <div class='toast toast-warning'>秘钥仅用于检测新版本、接入应用盒子(客机无需安装,既可代理你的应用)使用</div>
+    <div class="card-body">
+        <ul class="list">
+            {notempty name="info.config"}
+            <li class="list-item">应用序号<span class="ml-16">{$info.config.id}</span></li>
+            <li class="list-item">授权密钥<span class="ml-16"><a href="{:url('license/licenseUrl')}" target="_blank" primary>{$info.config.key??'未获得,点击创建秘钥'}</a></span></li>
+            <li class="list-item">授权时间<span class="ml-16">2022-11-03 12:35</span></li>
+            {/notempty}
+            <li class="list-item">技术支持<span class="ml-16">{$Think.const.SYSNAME} {$Think.const.BASEVER}</span><sapn class="ml-8 c-hand tag tag-error checkVar" url="{:url('license/checkVar')}">检查</sapn></li>
+        </ul>
+   </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',() => {
+    $(".checkVar").actUrl({content: '版本检查',text: '点击“确认”检查最新版本'})
+})
+</script>
+{/block}

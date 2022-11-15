@@ -1,0 +1,47 @@
+{extend name="./layout" /}
+{block name="style"}
+<style type="text/css">
+#app{background:linear-gradient(180deg,var(--color-white),var(--gray-3));}
+</style>
+{/block}
+{block name="body"}
+<div id="layoutLogin">
+    {include file="index/layoutlogin" /}
+    <div class="login-content space-justify-center cols col-gapless">
+        <div class="card w500" id="login">
+            <div class="card-header"><div class="card-title text-bold">{$configs.name}</div></div>
+            <form id="form" class="form-horizontal form-lg" action="{:url('tenant/index/forgot')}">
+                <div class="card-body mt-24">
+                    <div class="form-group input-group">
+                        <span class="input-addon"><i class="icon bi-person"></i></span>
+                        <input name="phone_id" data-rule="required;mobile" autocomplete="off" class="form-input" type="number" placeholder="手机号">
+                    </div>
+                    <div class="form-group input-group">
+                        <input name="sms_code" class="form-input" data-rule="required;length(4)" type="number" placeholder="验证码">
+                        <button id="get_sms" type="button" class="btn input-group-btn">获取验证码</button>
+                    </div>
+                    <div class="form-group"><input autocomplete="off" name="password" class="form-input" data-rule="密码:required;length(6~)" type="password" placeholder="设置密码"></div>
+                    <div class="form-group"><input autocomplete="new-password" name="repassword" class="form-input" data-rule="确认密码:match(password);required" type="password" placeholder="确认密码"></div>
+                </div> 
+                <div class="card-footer">
+                    <button class="btn btn-block" type="submit" danger>重设密码,并登录</button>
+                    <a href="{:url('tenant/index/login')}" class="btn btn-block mt-8" text><i class="icon bi-chevron-left"></i> 返回</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base','form', function () {
+    $('#form').isForm();
+    $('#get_sms').click(function(){
+        var that  = this;
+        $(this).requestUrl({uri:"{:url('index/getsms')}",confirm:false,post:true,param:{phone_id:$('input[name=phone_id]').val()}},(rel)=>{
+            204 == rel.code&&$(that).setSmsBtn();
+        })
+    })
+});
+</script> 
+{/block}

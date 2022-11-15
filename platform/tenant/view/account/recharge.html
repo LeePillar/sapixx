@@ -1,0 +1,54 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="toast toast-warning">
+        <p>1、如您有未结清账单，充值后优先抵扣未结清账单。</p>
+        <p>2、请注意帐号余额，以免影响正常服务。</p>
+        <p>3、在您消费后，平台将基于您的消费进行发票开具。</p>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('account/recharge')}">
+            <div class="form-group">
+                <label class="form-label">帐号余额 <span class="text-error text-large widget-price">{$tenant.money+$tenant.lock_money|money}</span></label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">充值金额 <span class="text-gray text-tiny">单次充值金额不低于￥10元</span></label>
+                <div class="input-group">
+                    <input data-rule="required;digits" class="form-input" type="number" name="money" value="" />
+                </div>
+            </div>
+            <div class="form-group mt-16">
+                <label class="form-checkbox"><input data-rule="required" type="checkbox" name="agree" value="1"><i class="form-icon"></i> 我已了解：充值的款项只可用于平台消费，切不支持退款。</label>
+            </div>
+            <div class="form-group mt-24">
+                <button id="recharge" type="submit" class="btn btn-lg" success outline>微信充值</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{/block}}
+{block name='js'}
+<script type="text/javascript">
+Do('qrcode','http','form', function () {
+    $('#form').isForm((rel) => {
+        if(204 == rel.code){
+            var interval
+            layer.confirm('<div id="qrcode" class="w260 h260"></div>',{btn: ['支付完成'],title:'微信扫码',shade:false,id:100,end:function(){
+                clearInterval(interval);
+                $("#recharge").removeAttr("disabled");
+            }},function (index) {
+                layer.close(index);
+            },setTimeout(function () {
+                $("#recharge").attr({"disabled":"disabled"});
+                $("#qrcode").qrcode({render: "canvas",text:rel.data.code_url,background:"#ffffff",foreground:"#333333"});
+                interval = setInterval(function() {
+                    http.post("{:url('account/checkRecharge')}"+'?ordersn='+rel.data.out_trade_no)
+                },2000);
+            },100));
+        }
+    });
+});
+</script>
+{/block}
+
+

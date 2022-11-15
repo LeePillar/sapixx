@@ -1,0 +1,34 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-body">
+        <form id="form" action="{:url('tenant/recharge')}">
+            <input type="hidden" name="id" value="{$info.id??0}" />
+            <div class="form-group">
+                <label class="form-label">帐号余额 <span class="text-gray text-tiny">充值到帐号余额</span></label>
+                <div class="input-group">
+                    <input data-rule="required;digits" class="form-input" type="number" name="money" value="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">赠送金额 <span class="text-gray text-tiny">赠送金额,仅允许消费</span></label>
+                <div class="input-group">
+                    <input data-rule="required;digits" class="form-input" type="number" name="lock_money" value="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-block" warning outline>确定充值</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{/block}}
+{block name='js'}
+<script type="text/javascript">
+Do('form',()=>{
+    $('#form').isForm();
+});
+</script>
+{/block}
+
+

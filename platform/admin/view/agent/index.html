@@ -1,0 +1,47 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-header"><a href="{:url('agent/edit')}" class="btn" primary>创建管理员</a></div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>代理级别</th>
+                    <th class="w80">自助开通</th>
+                    <th class="w180">开通费用</th>
+                    <th class="w180">续期费用</th>
+                    <th class="w60">折扣</th>
+                    <th class="w80">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {foreach $list as $rs}
+                <tr>
+                    <td>{$rs.title}</td>
+                    <td>
+                        <a class="act status status-{$rs.is_enabled?'success':'invalid'}" href="{:url('agent/status',['id' => $rs.id])}" title="锁定/解锁">
+                            {if $rs.is_enabled}允许{else}禁止{/if}
+                        </a>
+                    </td>
+                    <td><span class="widget-price text-dark">{$rs.price}</span><span class="text-gray text-tiny">+{$rs.price_gift}</span></td>
+                    <td><span class="widget-price">{$rs.recharge_price}</span><span class="text-gray text-tiny">+{$rs.recharge_price_gift}</span></td>
+                    <td>{$rs.discount}折</td>
+                    <td>
+                        <a class="link" href="{:url('agent/edit',['id' => $rs.id])}">编辑</a>
+                        <a class="link actDel {$rs.tenant_count > 0?'link-disabled':''}" href="{:url('agent/delete',['id'=>$rs.id])}">删除</a>
+                    </td> 
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.act').actUrl({text:'确认改变当前状态?'})
+    $('.actDel').actUrl({is_delete:true})
+})
+</script>
+{/block}

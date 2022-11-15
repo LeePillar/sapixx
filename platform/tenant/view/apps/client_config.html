@@ -1,0 +1,70 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$logo.logo??''}"></div>
+            <div class="tile-content">
+                <div class="tile-title">{$logo.title??''} <span class="text-tiny text-gray">仅限开通Web访问服务的</span></div>
+                <div class="tile-subtitle input-group mt-8">
+                    <div class="input-addon">Web访问</div>
+                    {if $is_web}<a class="input-addon form-success tips" title="点击访问" href="{$domain}" target="_blank"><i class="icon bi-box-arrow-up-right"></i></a>{/if}
+                    <input disabled  class="form-input form-success" type="text" value="{$domain}" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('apps/clientConfig',['type' => $Request.param.type])}">
+            {if $Request.param.type =='wechatmp' || $Request.param.type =='wechatapp'}
+            <div class="form-group">
+                <label class="form-label">微信响应(URL) <span class="text-tiny text-gray">在URL后面加 ?echostr=sapixx 参数可以验证URL配置 </span></label>
+                {if $info}
+                <input disabled class="form-input form-error" type="text" value="{$Request.domain}/apis/service/message/{$info.appid??'$APPID$'}/get/{$info.id_code??'$client_id$'}" />
+                {else}
+                <input disabled class="form-input form-error" type="text" value="请先保存配置" />
+                {/if}
+            </div>
+            {/if}
+            <div class="form-group">
+                <label class="form-label">AppID <span class="text-gray text-tiny">{$app->config['is_open_wechat']?'一键授权后禁止修改':($info.name??'').'的APPID'}</span></label>
+                <input class="form-input" type="text" name="appid" value="{$info.appid??''}" data-rule="required;letters_num" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">AppSecret <span class="text-tiny text-gray">一般由接入方提供，若不提供的可随机生成。</span></label>
+                <div class="input-group">
+                    <input data-rule="required;letters_num;length(32)" autocomplete="off" class="form-input" type="text" name="secret" value="{$info.secret??''}" />
+                    <button type="button" class="btn" id="secret" gray><i class="icon icon-2x bi-arrow-repeat"></i> 生成</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Token</label>
+                <div class="input-group">
+                    <input data-rule="required;letters_num;length(32)" autocomplete="off" class="form-input" type="text" name="token" value="{$info.token??''}" />
+                    <button type="button" class="btn" id="token" gray><i class="icon icon-2x bi-arrow-repeat"></i> 生成</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">EncodingAESKey <span class="text-tiny text-gray">消息加密Key.不小于43位</span></label>
+                <div class="input-group">
+                    <input data-rule="required;letters_num;length(43)" autocomplete="off" class="form-input" type="text" name="aes_key" value="{$info.aes_key??''}" />
+                    <button type="button" class="btn" id="aes_key" gray><i class="icon icon-2x bi-arrow-repeat"></i> 生成</button>
+                </div>
+            </div>
+            <div class="form-group mt-24">
+                <button type="submit" class="btn" primary>保存配置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+    Do('base','form',function () {
+        $('#form').isForm();
+        $('#secret').randomWord({len:32,dom:"input[name='secret']"})
+        $('#token').randomWord({len:32,dom:"input[name='token']"})
+        $('#aes_key').randomWord({len:43,dom:"input[name='aes_key']"})
+    });
+</script>
+{/block}

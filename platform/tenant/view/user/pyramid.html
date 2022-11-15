@@ -1,0 +1,37 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card mb-8">
+    <div class="card-body">
+        <div class="tile tile-centered">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="{$info.face}"></div>
+            <div class="tile-content">
+                <div class="tile-title">{$info.nickname}</div>
+                <small class="tile-subtitle">{if $info.phone}<span class="text-primary"><i class="icon bi-phone"></i>{$info.phone}</span>{/if}</small>
+            </div>
+        </div>
+    </div>
+</div>
+{if $people_num}
+<div class="card">
+    <div class="toast toast-warning">伞下共 <span class="fn-fb text-error">{$people_num}</span> 个用户</div>
+    <div class="card-body h350 scrollbar"><ul id="ztree" class="ztree"></ul></div>
+</div>
+{else /}
+<div class="empty">
+    <div class="empty-icon"><i class="icon bi-diagram-3"></i></div>
+    <p class="empty-title text-bold">没有伞下用户</p><p class="empty-subtitle text-tiny">没有任何用户是你的伞下关系</p>
+</div>
+{/if}
+{/block}
+{block name='js'}
+<script type="text/javascript">
+    Do('ztree',function () {
+        var setting = {async: {
+            enable: true,
+            url: "{:url('user/pyramid',['id' => $Request.param.id])}", 
+            autoParam: ["id"], 
+        }};
+        $.fn.zTree.init($("#ztree"),setting);
+    })
+</script> 
+{/block}

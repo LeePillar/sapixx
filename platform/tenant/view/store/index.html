@@ -1,0 +1,49 @@
+{extend name="./layout" /}
+{block name='style'}
+<style type="text/css">
+    .qrcode{right:16px;bottom: 16px;}
+    .scancode{top:34px;left:-100px;z-index:100;background-color: var( --color-white);padding:8px;width:140px;height:140px;}
+</style>
+{/block}
+{block name='main'}
+<div class="cols">
+{foreach $list as $key => $vo}
+{if !empty($vo.config)}
+<div class="col col-4 col-xl-6 col-sm-12 pb-16" >
+    <div class="card" >
+        <div class="card-header p-relative">
+            <div class="tile">
+                <div class="tile-icon"><img class="w80 rounded img-responsive" src="{$vo.logo}"></div>
+                <div class="tile-content">
+                    <div class="tile-title h5">{$vo.title}</div>
+                    <div class="tile-subtitle mt-8">{$vo.about??''}</div>
+                </div>
+                <div class="tile-action text-gray"><span class="widget-price text-error text-big text-bold">{$vo.price}</span>/年</div>
+            </div>
+            {if $vo.qrcode}
+            <div class="qrcode p-absolute c-hand" x-data="{show:false}" >
+                <i class="icon icon-5x bi-qr-code-scan"  @click.way="show = !show"></i>
+                <div class="p-absolute rounded scancode shadow-lg" x-show="show" @click.away = "show = false" x-transition><img class="rounded img-responsive" src="{$vo.qrcode}"></div>
+            </div>
+            {/if}
+        </div>
+        <div class="card-body">
+            <ul class="list">
+                <li class="list-item">应用类型{foreach $vo.config.types as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                <li class="list-item">支付方式{foreach $vo.config.payment as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                <li class="list-item">应用接入<span class="ml-16 status status-{$vo.config.is_open_wechat?'success':'error'}">{$vo.config.open_wechat_text}</span></li>
+                <li class="list-item">体验天数<span class="ml-16 text-gray">{$vo.expire_day}</span>天</li>
+            </ul>
+        </div>
+        <div class="card-footer btn-group btn-block">
+            <a href="{:url('store/onbuy',['id' => $vo.id])}" class="btn" outline primary>{if $tenant->agent}<span class="text-error">{$tenant->agent->discount}折</span>{/if} 开通应用</a>
+            {if $vo.expire_day > 0}
+            <a href="{:url('store/tryout',['id' => $vo.id])}" class="btn text-normal" outline primary>体验 <span class="text-error">{$vo.expire_day} 天</span></a>
+            {/if}
+        </div>
+    </div> 
+</div>
+{/if}
+{/foreach}
+{notempty name='$list->hasPages()'}<div class="card-footer">{$list|raw}</div>{/notempty}
+{/block}

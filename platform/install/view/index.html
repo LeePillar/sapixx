@@ -1,0 +1,37 @@
+<table class="table table-border">
+    <thead><tr><th class="w100">运行目录</th><th>环境检测</th></tr></thead>
+    <tbody>
+        <tr><td class="w100">PHP版本</td><td><i class="icon icon-4x text-error bi-{$version}"></i> <span class="text-gray text-tiny">必须 PHP >= 8.0.2</span></td></tr>
+        <tr><td>pdo</td><td><i class="icon icon-4x text-error bi-{$pdo}"></i></td></tr>
+        <tr><td>pdo_mysql</td><td><i class="icon icon-4x text-error bi-{$pdo_mysql}"></i></td></tr>
+        <tr><td>gd</td><td><i class="icon icon-4x text-error bi-{$gd}"></i></td></tr>
+        <tr><td>dom</td><td><i class="icon icon-4x text-error bi-{$dom}"></i></td></tr>
+        <tr><td>curl_init</td><td><i class="icon icon-4x text-error bi-{$curl_init}"></i></td></tr>
+        <tr><td>fileinfo</td><td><i class="icon icon-4x text-error bi-{$fileinfo}"></i></td></tr>
+        <tr><td>sodium</td><td><i class="icon icon-4x text-error bi-{$sodium}"></i></td></tr>
+        <tr><td></td><td>是否可写</td></tr>
+        <tr><td>/config</td><td><i class="icon icon-4x text-error bi-{$config}"></i></td></tr>
+        <tr><td>/runtime</td><td><i class="icon icon-4x text-error bi-{$runtime}"></i></td></tr>
+        <tr><td>/public/res</td><td><i class="icon icon-4x text-error bi-{$res}"></i></td></tr>
+        <tr><td>/public/static</td><td><i class="icon icon-4x text-error bi-{$static}"></i></td></tr>
+        <tr><td>/.env</td><td><i class="icon icon-4x text-error bi-{$env}"></i></td></tr>
+        <tr><td></td><td><div class="form-group"><label class="form-checkbox"><input type="checkbox" id="license"><i class="form-icon"></i> <a target="_blank" href="https://www.sapixx.com">SAPI++官网查看《商业授权》协议</a></label></div></td></tr>
+        <tr><th colspan="2"><button id="install" type="button" class="btn btn-block" primary>同意《协议》下一步开始安装</button></th></tr>
+</tbody>
+</table>
+<script type="text/javascript">
+Do('base',function(){
+    NProgress.set(0.3); 
+    $('#install').click(()=>{
+        if($('.bi-check-square').length != 13){
+            layer.toast('您的配置或权限不符合要求',{skin:'warning'});
+        }else{
+            if ($("#license").is(":checked")) {
+                location.href="{:url('index/index',['i' => 'success'])}";
+            }else{
+                layer.toast('必须同意SAPI++《商业授权》协议',{skin:'warning'});
+            }
+        }
+    })
+})
+</script>

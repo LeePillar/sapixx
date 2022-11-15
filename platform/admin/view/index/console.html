@@ -1,0 +1,99 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="cols mb-16">
+    <div class="col col-4">
+        <div class="card h150">
+            <div class="card-body ">
+                <div class="tile tile-centered">
+                    <div class="tile-icon"><div class="avatar avatar-xl none w50 h50 shadow-lg"><img src="__PUBLIC__/img/avatar-1.png" class="w50 h50"></div></div>
+                    <div class="tile-content"><div class="tile-title text-large">{$admin->username}</div>
+                    <small class="tile-subtitle text-gray">管理员欢迎回来({$admin->last_login_time|date='Y-m-d H:i'})</small></div>
+                </div>
+                <div class="col cols col-12 mt-16">
+                    <div class="col">
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><span class="w40 h40 bg-warning-light rounded space space-align-center space-justify-center"><i class="icon icon-4x bi-currency-yen"></i></span></div>
+                            <div class="tile-content"><div class="tile-title text-bold h3 widget-price">{$moneys}</div>
+                            <small class="tile-subtitle text-gray">帐号余额</small></div>
+                        </div>
+                    </div>
+                    <div class="col ml-16">
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><span class="w40 h40 bg-success-light rounded space space-align-center space-justify-center"><i class="icon icon-4x bi-credit-card"></i></span></div>
+                            <div class="tile-content"><div class="tile-title text-bold h3 widget-price">{$consumes}</div>
+                            <small class="tile-subtitle text-gray">消费金额</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-8">
+        <div class="card h150">
+            <div class="card-header cols">
+                <div class="col h4 text-bold text-gray">数据统计</div>
+                <div class="col col-auto text-gray">近一个月数据</div>
+            </div>
+            <div class="card-body cols">
+                <div class="col">
+                    <div class="tile tile-centered">
+                        <div class="tile-icon"><span class="w50 h50 bg-primary-light circle space space-align-center space-justify-center"><i class="icon icon-4x bi-currency-yen"></i></span></div>
+                        <div class="tile-content"><div class="tile-title text-bold h3 widget-price">{$money}</div>
+                        <small class="tile-subtitle text-gray">充值金额</small></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="tile tile-centered">
+                        <div class="tile-icon"><span class="w50 h50 bg-success-light circle space space-align-center space-justify-center"><i class="icon icon-4x bi-credit-card"></i></span></div>
+                        <div class="tile-content"><div class="tile-title text-bold h3 widget-price">{$consume}</div>
+                        <small class="tile-subtitle text-gray">消费金额</small></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="tile tile-centered">
+                        <div class="tile-icon"><span class="w50 h50 bg-error-light circle space space-align-center space-justify-center"><i class="icon icon-4x bi-person-plus"></i></span></div>
+                        <div class="tile-content"><div class="tile-title text-bold h3">{$tenant}</div>
+                        <small class="tile-subtitle text-gray">注册租户</small></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="tile tile-centered">
+                        <div class="tile-icon"><span class="w50 h50 bg-warning-light circle space space-align-center space-justify-center"><i class="icon icon-4x bi-app-indicator"></i></span></div>
+                        <div class="tile-content"><div class="tile-title text-bold h3">{$apps}</div>
+                        <small class="tile-subtitle text-gray">开通应用</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header cols">
+        <div class="col space space-align-center text-bold"><i class="icon bi-list-task icon-2x mr-8"></i>用户账单</div>
+        <div class="col col-auto btn-group btn-group-block">
+            <a pjax href="{:url('index/console',['money'=>0])}" class="btn" {$Request.param.money == 0?'primary':'outline'}>全部</a>
+            <a pjax href="{:url('index/console',['money'=>1])}" class="btn" {$Request.param.money == 1?'primary':'outline'}>充值</a>
+            <a pjax href="{:url('index/console',['money'=>2])}" class="btn" {$Request.param.money == 2?'primary':'outline'}>消费</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr><th class="w80 text-center">类型</th><th class="w100">金额</th><th class="w60">状态</th><th>说明</th><th class="w140">时间</th></tr>
+            </thead>
+            <tbody>
+            {foreach $bill as $vo}
+            <tr>
+                <td class="text-center"><span class="tag tag-{$vo.money>0?'primary':'warning'}">{$vo.types}</span></td>
+                <td class="widget-price">{$vo.money}</td>
+                <td><span class="lock status status-{$vo.state?'success':''}">{$vo.state_text}</span></td>
+                <td>{$vo.message}</td>
+                <td>{$vo.update_time|date='Y-m-d H:i:s'}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">{$bill|raw}</div>
+</div>
+{/block}

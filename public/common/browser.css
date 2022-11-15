@@ -1,0 +1,20 @@
+/* weapp */
+.weapp {position: relative;;border: 1px solid var(--gray-3);background-color: #FFF;border-radius:6px;}
+.weapp .weapp-nav{border-radius:5px 5px 0px 0px;display: flex;background:var(--gray-3);padding:20px 10px 0px 10px;height: 64px;line-height: 40px;font-size: 15px;}
+.weapp .weapp-nav::after{content: '5G WiFi';font-size: 12px;position: absolute;right:10px;top:-8px;}
+.weapp .weapp-nav::before{content: '20:00';font-size: 12px;position: absolute;left:10px;top:-8px;}
+.weapp .weapp-nav .weapp-name{flex: 1;}
+.weapp .weapp-nav .weapp-state{display: flex;width: 87px;height: 30px;margin-top:8px;background-color: rgba(255, 255, 255, 0.6);border:var(--gray-6);line-height: 1;font-size: 0px;align-items: center;border-radius: 27px;border-width: 1px;border-style: solid;border-color: rgba(255, 255, 255, 0.25);border-image: initial;}
+.weapp .weapp-nav .weapp-state::before{content: '';position: relative;left:44px;min-width: 1px;height: 17.2px;background: rgba(0, 0, 0, 0.15);}
+.weapp .weapp-nav .weapp-state .weapp-more{display: flex;height: 30px;align-items: center;justify-content: center;flex: 1 1 0%;box-sizing: border-box;}
+.weapp .weapp-nav .weapp-state .weapp-more i{display:inline-block;width:4px;height:4px;margin:0px .14rem;vertical-align:middle;border-radius:4px;background:var(--gray-9)}
+.weapp .weapp-nav .weapp-state .weapp-more i:not(:first-child):not(:last-child){width:6px;height:6px;border-radius:6px;}
+.weapp .weapp-nav .weapp-state .weapp-close{display: flex;height: 30px;align-items: center;justify-content: center;flex: 1 1 0%;box-sizing: border-box;}
+.weapp .weapp-nav .weapp-state .weapp-close i{display:inline-block;position:relative;width:16px;height:16px;vertical-align:middle;border-radius:16px;background:var(--gray-9);}
+.weapp .weapp-nav .weapp-state .weapp-close i::before{content:'';position: absolute;width:12px;height:12px;left:2px;top:2px;border-radius:10px;background:var(--color-white);border: 4px var(--color-white);}
+.weapp .weapp-nav .weapp-state .weapp-close i::after{content:'';position: absolute;width:6px;height:6px;left:5px;top:5px;border-radius:6px;background:var(--gray-9);}
+.weapp .weapp-body{position: relative;min-height:640px;max-height:700px;overflow-y:auto;overflow-x: hidden;padding:1px;background-color: var(--gray-1);}
+.weapp .weapp-body::-webkit-scrollbar{display:block;width:6px;background:transparent}
+.weapp .weapp-body::-webkit-scrollbar-thumb{background:var(--gray-4) content-box;border:2px solid transparent;border-radius:6px}
+.weapp .weapp-body::-webkit-scrollbar-thumb:hover{background-color:var(--gray-5)}
+.weapp .weapp-bar{height: 50px;position: absolute;bottom: 0px;right:0;left: 0px;z-index: 1;display: flex;background-color:var(--gray-1);box-sizing: border-box;border-radius:0px 0px 5px 5px;}

@@ -1,0 +1,65 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold">
+                <button primary class="btn action" url="{:url('user/selectWin',['issale'=>0])}">选择</button>
+            </div>
+            <div class="col col-auto">
+                <form id="search" action="{:url('user/selectWin')}" class="input-group">
+                    <input placeholder="手机号或昵称" class="form-input " type="text" name="keyword" value="{$keyword}" />
+                    <button type="submit" class="btn input-btn" primary>搜索</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr><th class="text-center w40"><input type="checkbox" id="checkAll"></th><th>用户</th><th class="w70">状态</th><th class="w50">选择</th></tr>
+            </thead>
+            <tbody>
+            {empty name="list"}
+                <tr><td colspan="4"><div class="empty"><div class="empty-icon text-primary"><i class="icon bi-person"></i></div><p class="empty-title text-bold">没有用户</p><p class="empty-subtitle">还没有任何会员信息</p></div></td></tr>
+            {else /}
+                {foreach $list as $vo}
+                <tr>
+                    <td class="text-center"><input name="ids[]" type="checkbox" value="{$vo.id}"></td>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="{$vo.face}"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">{$vo.nickname} <span class="label label-sm label-rounded text-tiny">{$vo.sex}</span> </div>
+                                <small class="tile-subtitle">{$vo.phone}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a class="act status status-{$vo.is_lock?'':'success'}" href="{:url('user/islock',['id'=>$vo.id])}" title="锁定/解锁">{$vo.is_lock?'锁定':'正常'}</a></td>
+                    <td><span class="link selectUID" uid="{$vo.id}">选择</span></td>
+                </tr>
+                {/foreach}
+            {/empty}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base',function () {
+    $("#checkAll").checkAll()
+    var index = parent.layer.getFrameIndex(window.name); 
+    //批量用户
+    $(".action").multiAction({},(rel) => {
+        parent.$("#"+$('body').attr("class"))[0].contentWindow.setUser(rel.data.uid);
+        parent.layer.close(index);
+    })
+    //选择用户
+    $(".selectUID").click(function(){
+        parent.$("#"+$('body').attr("class"))[0].contentWindow.setUser($(this).attr('uid'));
+        parent.layer.close(index);
+    })
+})
+</script>
+{/block}

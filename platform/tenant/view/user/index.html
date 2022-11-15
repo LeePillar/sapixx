@@ -1,0 +1,80 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="cols">
+            <div class="col space space-align-center text-bold"><i class="icon bi-card-list icon-3x mr-8"></i> 会员列表</div>
+            <div class="col col-auto">
+                <form id="search" action="{:url('user/index')}" class="input-group">
+                    <input type="hidden" name="types" value="{$types}" />
+                    <input placeholder="邀请码,手机号或昵称" class="form-input " type="text" name="keyword" value="{$keyword}" />
+                    <button type="submit" class="btn input-btn" primary>搜索</button>
+                </form>
+            </div>
+            <div class="col col-auto">
+                <div class="btn-group btn-group-block">
+                    <a pjax href="{:url('user/index',['types'=>0])}" class="btn"{$Request.param.types == 0?'primary':'outline'}>正常</a>
+                    <a pjax href="{:url('user/index',['types'=>1])}" class="btn"{$Request.param.types == 1?'primary':'outline'}>锁定</a>
+                    <a pjax href="{:url('user/index',['types'=>2])}" class="btn"{$Request.param.types == 2?'primary':'outline'}>回收站</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr><th class="w60 text-center">邀请码</th><th>用户</th><th class="w120">创建时间</th><th class="w120">更新时间</th><th class="w70">状态</th><th class="w80">管理</th></tr>
+            </thead>
+            <tbody>
+            {empty name="list"}
+                <tr><td colspan="6"><div class="empty"><div class="empty-icon text-primary"><i class="icon bi-person"></i></div><p class="empty-title text-bold">没有用户</p><p class="empty-subtitle">还没有任何会员信息</p></div></td></tr>
+            {else /}
+                {foreach $list as $vo}
+                <tr>
+                    <td class="text-center">{$vo.invite_code}</td>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w40 rounded img-responsive" src="{$vo.face}"></div>
+                            <div class="tile-content">
+                                <div class="tile-title">{$vo.nickname} <span class="label label-sm label-rounded text-tiny">{$vo.sex}</span> </div>
+                                <small class="tile-subtitle">{$vo.phone}</small>
+                            </div>
+                            <div class="tile-action btn-group">
+                                <button outline primary class="win btn-sm btn text-normal" url="{:url('user/client',['id'=>$vo.id])}">来源</button>
+                                <button outline primary class="win btn-sm btn text-normal" url="{:url('user/pyramid',['id'=>$vo.id])}">伞下</button>
+                                <button outline primary class="win btn-sm btn text-normal" url="{:url('user/source',['id'=>$vo.id])}">溯源</button>
+                                <button outline primary class="win btn-sm btn text-normal" url="{:url('user/reset',['id'=>$vo.id])}">重排</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{$vo.create_time}</td>
+                    <td>{$vo.update_time}</td>
+                    <td><a class="act status status-{$vo.is_lock?'':'success'}" href="{:url('user/islock',['id'=>$vo.id])}" title="锁定/解锁">{$vo.is_lock?'锁定':'正常'}</a></td>
+                    <td> 
+                        {if $vo.is_delete}
+                            <a class="link link-disabled" href="#">编辑</a>
+                            <a class="link link-disabled" href="#">删除</a>
+                        {else}
+                            <a class="link edit" href="{:url('user/edit',['id'=>$vo.id])}">编辑</a>
+                            <a class="link del" href="{:url('user/delete',['id'=>$vo.id])}">删除</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+            {/empty}
+            </tbody>
+        </table>
+    </div>
+    <div class="{$list->hasPages()?'card-footer':'d-hide'}">{$list|raw}</div>  
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base',function () {
+    $('.edit').win({reload:true})
+    $('.win').win()
+    $('.act').actUrl({text:'确认改变当前状态?'})
+    $('.del').actUrl({is_delete:true})
+})
+</script>
+{/block}

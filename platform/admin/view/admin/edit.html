@@ -1,0 +1,37 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-body">
+        <form class="form-horizontal" id="form" action="{:url('admin/edit')}">
+            <input type="hidden" name="id" value="{$info.id ?? 0}" />
+            <div class="form-group">
+                <label class="form-label">帐号名称</label>
+                <input data-rule="required;remote({:url('admin/isPass',['id' => $info.id??0])})" name="username" class="form-input" type="text" value="{$info.username??''}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">登录密码</label>
+                <input name="password" class="form-input" data-rule="密码:required;length(6~)" type="password">
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <input name="repassword" class="form-input" data-rule="确认密码:required;match(password)" type="password">
+            </div>
+            <div class="form-group">
+                <label class="form-label">帐号备注</label>
+                <input name="about" class="form-input" data-rule="required" type="text" value="{$info.about??''}">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn" primary>确认</button>
+                <button type="reset" class="btn">重置</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+    Do('form',function () {
+        $('#form').isForm();
+    })
+</script>
+{/block}

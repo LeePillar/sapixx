@@ -1,0 +1,48 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-body">
+        <form  id="form" action="{:url('tenant/edit')}">
+            <input type="hidden" name="id" value="{$info.id??0}" />
+            <input type="hidden" name="agent_id" value="{$info.agent_id??0}" />
+            <div class="form-group">
+                <label class="form-label">代理级别	<span class="text-gray text-tiny">不填写,为普通租户</span></label>
+                <select id="selectAgent" name="agent_id" class="form-select" data-placeholder="选择代理">
+                    <option value="0" {if empty($info.agent_id) || $info.agent_id == 0}selected{/if}>普通租户</option>
+                    {foreach $agent as $vo}<option value="{$vo.id}" {if isset($info.agent_id) && $vo.id == $info.agent_id}selected{/if}>{$vo.title}</option>{/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">用户名称</label>
+                <input data-rule="required" class="form-input" type="text" name="username" value="{$info.username??''}" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">手机号</label>
+                <input data-rule="required;mobile;remote({:url('tenant/isphone',['id'=> $info.id??0])})" class="form-input" type="text" name="phone" value="{$info.phone_id??''}" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">登录密码<span class="text-gray text-tiny pl-8">不填,初始话密码为123456</span></label>
+                <input class="form-input" data-rule="length(6~16)" type="password" name="password"  />
+            </div>
+            <div class="form-group">
+                <label class="form-label">安全密码<span class="text-gray text-tiny pl-8">不填,初始安全密码为手机号后6位</span</label>
+                <input class="form-input" data-rule="integer;length(6)" type="password" name="safe_password" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn" primary>确定</button>
+                <button type="reset" class="btn">重置</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{/block}}
+{block name='js'}
+<script type="text/javascript">
+    Do('form','select',function () {
+        $('#form').isForm();
+        $('#selectAgent').select2({language:{noResults:()=>{return"未找到结果"}}})
+    });
+</script>
+{/block}
+
+

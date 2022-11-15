@@ -1,0 +1,51 @@
+{extend name="./layout" /}
+{block name='style'}
+<style type="text/css">
+    .tile-icon{position: relative;}
+    .tile-icon .btn{position: absolute;left:0px;bottom:0px;opacity:.8;}
+</style>
+{/block}
+{block name='main'}
+<div class="card" x-data="{title:'{$apps.title??''}',about:'{$apps.about??''}'}">
+    <div class="card-header">
+        <div class="tile">
+            <div class="tile-icon w70 h70">
+                <img class="w70 rounded img-responsive logo" src="{$apps.logo}">
+                <button type="button" class="btn btn-sm" id="logo" gray icon><i class="icon bi-pencil"></i></button>
+            </div>
+            <div class="tile-content">
+                <div class="tile-title" x-text="title">{$apps.title}</div>
+                <div class="tile-subtitle text-gray" x-text="about">{$apps.about}</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('apps/edit')}">
+            <input type="hidden" name="logo" value=""/>
+            <div class="form-group">
+                <label class="form-label">应用名称</label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="title" value="{$apps.title}" x-model="title"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用简述</label>
+                <textarea autocomplete="off" data-rule="required;length(~80)" class="form-input h60" type="text" name="about" x-model="about"/>{$apps.about}</textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-block" primary outline>确定</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base','form','date','upload',function () {
+    $('#form').isForm();
+    $('.win').win();
+    $('#logo').upload({multiple:false},(rel)=>{
+        $("input[name='logo']").val(rel.url)
+        $(".logo").attr("src",rel.url);
+    });
+});
+</script>
+{/block}

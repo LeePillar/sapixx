@@ -1,0 +1,42 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card" x-data="{title:'{$info.title??''}',about:'{$info.about??''}'}">
+    <div class="card-header">
+        <div class="tile">
+            <div class="tile-icon"><img class="w50 rounded img-responsive" src="{$info.logo}"></div>
+            <div class="tile-content">
+                <div class="tile-title" x-text="title">{$info.title}</div>
+                <div class="tile-subtitle text-gray"  x-text="about">{$info.about??''}</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('apps/edit')}">
+        <input type="hidden" name="id" value="{$info.id}" />
+            <div class="form-group">
+                <label class="form-label">到期时间</label>
+                <input readonly autocomplete="off" data-rule="required|date" class="form-input ui-date" type="text" name="end_time"  placeholder="yyyy-dd-mm" value="{$info.end_time|date='Y-m-d'}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用名称</label>
+                <input autocomplete="off" data-rule="required" class="form-input" type="text" name="title" value="{$info.title}" x-model="title"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">应用简述</label>
+                <textarea autocomplete="off" data-rule="required" class="form-input h100" type="text" name="about" x-model="about" />{$info.about}</textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-block" >确定</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base','form','date',function () {
+    $('#form').isForm();
+    $('.win').win();
+});
+</script>
+{/block}

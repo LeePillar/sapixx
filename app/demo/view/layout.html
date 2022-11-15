@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-Hans-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="application-name" content="{$Think.const.SYSNAME} ({$Think.const.BASEVER})">
+<meta name="copyright" content="{$Think.const.SYSNAME} Designed & Developed by BrownStone">
+<meta name="applicable-device" content="pc">
+<meta name="csrf-token" content="{:token()}">
+<title>{$configs.name}</title>
+<meta name="description" content="{$configs.about}">
+<script type="text/javascript" src="__PUBLIC__/lib/do.js"></script>
+<script type="text/javascript" src="__PUBLIC__/lib/package.js"></script>
+<script src="__PUBLIC__/js/alpine.min.js" defer></script>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/system.css" />{block name="style"}{/block}</head>
+<body id="app">
+{block name='breadcrumb'}{tag:breads value="breadcrumb" /}{/block}{block name='header'}{/block}
+{block name="body"}<div class="docs-content">{block name="main"}{/block}</div>{/block}
+{block name='footer'}{/block}</body>{block name="js"}{/block}</html>

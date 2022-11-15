@@ -1,0 +1,33 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile">
+            <div class="tile-icon"><img src="{$apps.logo}" class="w50 w50 rounded img-responsive"></div>
+            <div class="tile-content">
+                <div class="text-dark">{$apps.title} <span class="text-tiny">v{$apps.app.config.var??'1.0.0'}</span></div>
+                <div class="text-gray">{$apps.about}</div>
+            </div>
+            <div class="tile-action btn-group">
+                <button class="btn" outline primary>状态</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-header">
+        <div class="empty">
+            <div class="empty-icon text-center"><svg t="1647145249597" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10347" width="80" height="80"><path d="M669.3 369.4c9.8 0 19.6 0 29.4 1.6C671 245.2 536.9 152 383.2 152 211.6 152 71 269.7 71 416.8c0 85 45.8 156.9 124.2 210.9l-31.1 93.2L273.6 667c39.2 8.2 70.3 16.3 109.5 16.3 9.8 0 19.6 0 31.1-1.6-6.5-21.3-9.8-42.5-9.8-65.4 0.1-135.7 116.2-246.9 264.9-246.9z m-168.4-85c24.5 0 39.2 16.3 39.2 39.2 0 22.9-16.3 39.2-39.2 39.2-24.5 0-47.4-16.4-47.4-39.2 0-24.5 24.6-39.2 47.4-39.2z m-216.3 73.1c-24.7 0-47.8-16.2-47.8-38.8 0-24.3 24.7-38.8 47.8-38.8s39.5 16.2 39.5 38.8c0.1 22.7-16.4 38.8-39.5 38.8z" fill="#24DB5A" p-id="10348"></path><path d="M953.8 613c0-125.9-124.2-227.2-264.8-227.2-148.8 0-266.5 103-266.5 227.2 0 125.9 117.7 227.2 266.5 227.2 31.1 0 62.1-8.2 93.2-16.3l85 47.4-22.9-78.5c62.1-47.4 109.5-109.5 109.5-179.8z m-351.5-39.2c-14.7 0-31.1-14.7-31.1-31.1 0-14.7 16.3-31.1 31.1-31.1 22.9 0 39.2 16.3 39.2 31.1 0 16.4-14.7 31.1-39.2 31.1z m178-7.6c-14.8 0-31.3-14.6-31.3-30.7 0-14.6 16.5-30.7 31.3-30.7 23.1 0 39.5 16.2 39.5 30.7 0 16.2-16.4 30.7-39.5 30.7z" fill="#24DB5A" p-id="10349"></path></svg></div>
+            <p class="empty-title text-bold">接入授权</p>
+            <div class="empty-subtitle toast">
+                <p>1、微信公众号授权接入仅支持服务号。</p>
+                <p>2、授权接入不支持订阅号,因订阅号不支持帐号体系。</p>
+                <p>3、重新授权的公众号和原授权非同一个的,原用户帐号同步失效。</p>
+                <p>4、公众号如需特殊权限的,请登录官方“微信公众平台”设置。</p>
+            </div>
+            <div class="btn-group">
+                <a class="btn" href="{:url('tenant/wechat/authorize',['type' => 1])}" primary>{$info.config?'更新公众号授权':'公众号授权'}</a>
+                <a class="btn" href="https://mp.weixin.qq.com" target="_blank" outline primary>微信公众平台官网</a>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

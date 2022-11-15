@@ -1,0 +1,69 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card ">
+    <form id="form" action="{:url('wechat/submitWechat')}">
+    <div class="card-body h500 scrollbar">
+        <div class="form-group">
+            <label class="form-label">小程序类目 <span class="text-tiny text-gray">根据小程序首页类型选一个类目</span></label>
+            <select data-rule="required" name="category" class="form-select">
+                <option value="">请选择小程序类目</option>
+                {foreach $category as $key => $vo }<option value="{$key}">{$vo.name}</option>{/foreach}
+            </select>
+        </div>
+        {if !empty($release.reason)}
+        <div class="toast toast-warning">反馈内容/反馈截图初次审核免填写,审核失败后按需反馈</div>
+        <div class="form-group">
+            <label class="form-label">反馈内容</label>
+            <textarea autocomplete="off" data-rule="length(~80)" class="form-input" type="text" name="feedback_info" /></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">反馈截图 <span class="text-tiny text-gray">最多上传3张截图</span></label>
+            {tag:imgs id="feedback_stuff" num="3" /}
+        </div>
+        {/if}
+        <div class="toast toast-warning">当小程序类目包含社交-社区/论坛、社交-笔记、社交-问答其中之一时则禁止选不涉及</div>
+        <div class="form-group">
+            <label class="form-label">UGC场景 <span class="text-gray text-tiny">用户生成内容场景（UGC）信息安全声明</span></label>
+            <div class="input-group">
+                <label class="form-checkbox"><input class="form-checkbox" name="scene[]" type="checkbox" value="0" checked/><i class="form-icon"></i> 不涉及</label>
+                <label class="form-checkbox"><input class="form-checkbox" name="scene[]" type="checkbox" value="1" /><i class="form-icon"></i> 用户资料</label>
+                <label class="form-checkbox"><input class="form-checkbox" name="scene[]" type="checkbox" value="2" /><i class="form-icon"></i> 图片</label>
+                <label class="form-checkbox"><input class="form-checkbox" name="scene[]" type="checkbox" value="3" /><i class="form-icon"></i> 视频</label>
+                <label class="form-checkbox"><input class="form-checkbox" name="scene[]" type="checkbox" value="4" /><i class="form-icon"></i> 文本</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">UGC安全机制</label>
+            <div class="input-group">
+                <label class="form-checkbox"><input name="method[]" type="checkbox" value="1" checked/><i class="form-icon"></i> 微信官方安全API</label>
+                <label class="form-checkbox"><input name="method[]" type="checkbox" value="2" /><i class="form-icon"></i> 其它安全审核产品</label>
+                <label class="form-checkbox"><input name="method[]" type="checkbox" value="3" /><i class="form-icon"></i> 通过人工审核</label>
+                <label class="form-checkbox"><input name="method[]" type="checkbox" value="4" /><i class="form-icon"></i> 未做内容审核</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">是否有审核团队</label>
+            <div class="input-group">
+                <label class="form-checkbox"><input name="has_audit_team" type="radio" value="0" /><i class="form-icon"></i> 无团队</label>
+                <label class="form-checkbox"><input name="has_audit_team" type="radio" value="1" checked/><i class="form-icon"></i> 有团队</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">说明对UGC内容的审核机制,不超过100字</label>
+            <textarea autocomplete="off" data-rule="length(~100)" class="form-input" type="text" name="audit_desc" placeholder="例:管理员对内容人工审核" /></textarea>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-block" primary outline>确定</button>
+    </div>
+</form>
+</div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('form','upload',function () {
+    $('#form').isForm();
+    $('#feedback_stuff').multUpload({local:true});
+});
+</script> 
+{/block}
