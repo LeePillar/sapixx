@@ -41,4 +41,12 @@ class ApiController extends BaseController
             }
         }
     }
+
+    /**
+     * SaaS引擎版本检查
+     */
+    public function checkVar()
+    {
+        return enjson(200,SYSNAME.BASEVER);
+    }
 }

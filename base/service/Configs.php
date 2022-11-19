@@ -85,9 +85,9 @@ class Configs
      * 读取扩展配置
      * @return json
      */
-    public function plugin(string $app = '')
+    public function plugin(string $app = '',string $menu = 'version')
     {
-        $module_config = PATH_PLUGIN . $app . DS . 'config' . DS .'version.php';
+        $module_config = PATH_PLUGIN . $app . DS . 'config' . DS .$menu.'.php';
         return is_file($module_config) ? include $module_config : [];
     }
 

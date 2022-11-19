@@ -71,8 +71,13 @@ class App extends Common{
             SystemApp::edit($data);
             return enjson(200,['url' => (string)url('app/index')]);
         }else{
+            $view['path'] = 'app';
+            $info = SystemApp::where(['id' => $this->request->param('id/d')])->find();
+            if($info && isset(array_flip(SYSAPP)[$info->appname])){
+                $view['path'] = 'platform';
+            }
+            $view['info']       = $info;
             $view['breadcrumb'] = [['name' =>'控制面板','icon' =>'window'],['name' =>'应用商店','url' => (string)url('app/index')],['name' =>'应用编辑']];
-            $view['info'] = SystemApp::where(['id' => $this->request->param('id/d')])->find();
             return view()->assign($view);
         }
     }
@@ -111,6 +116,8 @@ class App extends Common{
                 Db::query($sql);
             }
         }
+        //删除静态资源
+        Dir::rmDirs(PATH_STATIC.DS.$result->appname.DS);
         //删除安装数据
         SystemApp::destroy($id);
         return enjson(200);

@@ -10,7 +10,6 @@ namespace platform\admin\controller;
 use base\model\SystemTenant;
 use base\model\SystemApp;
 use base\model\SystemApps;
-use base\model\SystemAppsClient;
 use think\facade\Validate;
 
 class Apps extends Common{

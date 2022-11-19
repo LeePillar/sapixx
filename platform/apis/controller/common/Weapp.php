@@ -9,8 +9,7 @@
 namespace platform\apis\controller\common;
 use base\ApiController;
 use base\model\SystemUser;
-use think\facade\Filesystem;
-use Hashids\Hashids;
+use apixx\filesystem\facade\Filesystem;
 use util\Dir;
 
 class Weapp extends ApiController
@@ -86,14 +85,13 @@ class Weapp extends ApiController
         }
     }
 
-
     //获取二维码地址
     protected  function getQrcodePath(){
-        $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-        $appname = ($this->request->app?$this->request->app->appname:'storage');
-        $apps_id = $this->request->apps?DS.$hashids->encode($this->request->apps->id):'';
+        $appname = $this->request->app?$this->request->app->appname:'storage';
+        $apps_id = $this->request->apps?DS.idcode($this->request->apps->id,false):'';
         return PATH_RES.$appname.$apps_id.DS.'qrcode';
     }
+
     /**
      * 获取小程序码
      * 适用于需要的码数量较少的业务场景。通过该接口生成的小程序码，永久有效，有数量限制

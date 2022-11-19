@@ -9,10 +9,9 @@
 namespace base\logic;
 use think\exception\ValidateException;
 use think\Request;
-use think\facade\Filesystem;
+use apixx\filesystem\facade\Filesystem;
 use think\facade\Config;
 use base\model\SystemAppsConfig;
-use Hashids\Hashids;
 
 class Upload {
 
@@ -35,9 +34,8 @@ class Upload {
         if($type == 'admin'){
             $bucket = 'platform';
         }else{
-            $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
             $appname = ($this->request->app?$this->request->app->appname:'storage');
-            $apps_id = $this->request->apps?'/'.$hashids->encode($this->request->apps->id):'';
+            $apps_id = $this->request->apps?'/'.idcode($this->request->apps->id,false):'';
             $bucket  = $appname.$apps_id;
         }
         //储存方式配置读取
@@ -76,9 +74,8 @@ class Upload {
      * @return void
      */
     public function local(){
-        $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
         $appname = ($this->request->app?$this->request->app->appname:'storage');
-        $apps_id = $this->request->apps?'/'.$hashids->encode($this->request->apps->id):'';
+        $apps_id = $this->request->apps?'/'.idcode($this->request->apps->id,false):'';
         $bucket  = $appname.$apps_id;
         $uploadConfig = $this->config['disks']['public'];
         if(empty($uploadConfig )){
@@ -129,12 +126,13 @@ class Upload {
                         break;
                     case 'qcloud':
                         $appconfig = [
-                            'type'      => 'qcloud','scheme' => 'https','timeout' => 60,'connect_timeout' => 60,'read_from_cdn' => false,
+                            'type'      => 'qcloud',
                             'region'    => $config['endpoint'],
                             'appId'     => $config['appid'],
                             'secretId'  => $config['aes_key'],
                             'secretKey' => $config['secret'],
                             'bucket'    => $config['bucket'],
+                            'domain'    => $config['bucket'].'.cos.'.$config['endpoint'].'.myqcloud.com',
                             'url'       => $config['url']
                         ];
                         break;

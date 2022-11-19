@@ -10,6 +10,7 @@ namespace platform\admin\controller;
 use base\model\SystemConfig;
 use GuzzleHttp\Client;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use code\Code;
 
 class License extends Common{
@@ -26,7 +27,6 @@ class License extends Common{
         }
         $view['info']       = $info;
         $view['breadcrumb'] = [['name' =>'控制面板','icon' =>'window'],['name' =>'关于应用','url'=> (string)url('license/index')]];
-
         return view()->assign($view);
     }
 
@@ -36,8 +36,6 @@ class License extends Common{
     public function licenseUrl(){
         $token['client_domain'] = $this->request->host();
         $token['client_ip']     = $this->request->server('SERVER_ADDR');
-        $token['client_url']    = (string)url('admin/license/getkey');
-        $str = app('jwt')->toUrlParams($token);
         $rel = SystemConfig::where(['title' => 'license'])->find();
         if(empty($rel)){
             $param['id'] = uuid(4,true,$token['client_domain'].'#'.$token['client_ip']);
@@ -45,7 +43,11 @@ class License extends Common{
         }else{
             $param['id'] = $rel->config['id'];
         }
-        $param['token'] = Jwt::encode(Code::en($str,$param['id']),$param['id']);
+        $param['token'] = Jwt::encode([
+            'data' => Code::en(app('jwt')->toUrlParams($token),$param['id']),
+            'iat'  => time(),
+            'exp'  => time() + 300,
+            'nbf'  => time() - 300],$param['id'],'HS256');
         return redirect(BASEURI.'/apixx?'.app('jwt')->toUrlParams($param));
     }
 
@@ -63,9 +65,9 @@ class License extends Common{
             if(empty($rel->config['id'])){
                 abort(403,'未找到Client_id,请重新点击"中台->关于应用->授权中心->创建秘钥"');
             }
+            $jwt = (array)Jwt::decode($client_key, new Key($rel->config['id'],'HS256'));
             $config['id'] = $rel->config['id'];
-            $config['key'] = Code::de(Jwt::decode($client_key,$rel->config['id'],['HS256']),$rel->config['id']);
-            //保存
+            $config['key'] = Code::de($jwt['data'],$rel->config['id']);
             $rel->config = $config;
             $rel->save();
             abort(200,'应用秘钥创建成功');

@@ -65,6 +65,7 @@ class Store extends Common{
             }
             //新增购买列表
             $order['app_id']    = $buyapp->id;
+            $order['logo']      = $buyapp->logo;
             $order['tenant_id'] = $this->request->tenant->id;
             $order['title']     = $data['title'];
             $order['about']     = $data['about'];

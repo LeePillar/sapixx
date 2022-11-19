@@ -9,7 +9,7 @@
 <div class="card">
     <div class="card-header">
         <div class="tile">
-            <div class="tile-icon"><img src="{$apps.logo}" class="w50 w50 rounded img-responsive"></div>
+            <div class="tile-icon"><img src="{$apps.logo}" class="w50 rounded img-responsive"></div>
             <div class="tile-content">
                 <div class="text-dark">{$apps.title} <span class="text-tiny">v{$apps.app.config.var??'1.0.0'}</span></div>
                 <div class="text-gray">{$apps.about}</div>
@@ -31,7 +31,11 @@
             </div>
             <div class="btn-group">
                 <a class="btn" href="{:url('tenant/wechat/authorize',['type' => 2])}" primary>{$info.config?'更新小程序授权':'小程序授权'}</a>
+                {if empty($info.config)}
+                <a class="btn" href="{:url('extra/weapp/create')}" outline primary>申请小程序</a> 
+                {else}
                 {if $app.config.open_wechat_tpl_id >= 0}<button outline type="button" class="btn updateSetting" url="{:url('tenant/wechat/updateSetting')}"><i class="icon bi-arrow-repeat"></i> 同步小程序信息</button>{/if}
+                {/if}
             </div>
         </div>
     </div>

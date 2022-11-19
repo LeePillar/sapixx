@@ -9,6 +9,7 @@ namespace platform\apis\controller\service;
 use base\ApiController;
 use base\model\SystemAppsClient;
 use think\facade\Event;
+
 class Message extends ApiController{
 
     /**

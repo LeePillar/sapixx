@@ -4,9 +4,9 @@
     <div id="header" class="shadow-sm space space-align-center col">
         <div class="col-auto"><div class="layoutLogo"></div></div>
         <div class="col" x-data="showapp({$app?'false':'true'})" int>
-            <button @click="open" id="sidebar" class="btn" icon>
-                <template x-if="show"><i class="icon bi-house icon-3x"></i></template>
-                <template x-if="!show"><i class="icon bi-layout-sidebar icon-2x"></i></template>
+            <button @click="open" id="sidebar" class="btn">
+                <template x-if="show"><i class="icon bi-house"><span class="pl-4">控制台</span></i></template>
+                <template x-if="!show"><i class="icon bi-layout-sidebar"><span class="pl-4">应用管理</span></i></template>
             </button>
         </div>
         <div class="col-auto">

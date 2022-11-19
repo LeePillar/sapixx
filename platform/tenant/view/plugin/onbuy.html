@@ -1,0 +1,45 @@
+{extend name="./layout" /}
+{block name='main'}
+<div class="card">
+    <div class="card-header">
+        <div class="tile">
+            <div class="tile-icon"><img class="w80 rounded img-responsive" src="{$info.logo}"></div>
+            <div class="tile-content">
+                <div class="tile-title h5">{$info.title}</div>
+                <div class="tile-subtitle mt-8">{$info.about??''}</div>
+            </div>
+            <div class="tile-action text-gray"><span class="widget-price text-error text-big text-bold">{$info.price}</span></div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="form" action="{:url('plugin/onbuy')}">
+            <input type="hidden" name="plugin_id" value="{$info.id}" />
+            <div class="form-group">
+                <label class="form-label">账户余额</label>
+                <input disabled class="form-input form-error text-bold text-big" type="text" value="￥{$tenant.money+$tenant.lock_money|money}"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">安全密码 <span class="text-gray text-tiny">初始安全密码为手机号后6位</span></label>
+                <div class="input-group"><input name="safepassword" class="form-input" data-rule="密码:required;digits;length(6)" type="password" /></div>
+            </div>
+            <div class="form-group mt-16">
+                <label class="form-checkbox"><input data-rule="required" type="checkbox" name="agree" value="1"><i class="form-icon"></i> 我已了解：扩展启用后,不支持退款。</label>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn" outline primary><span class="text-error widget-price mr-4">{$info.price}</span>立即开通</button>
+            </div>
+        </form> 
+    </div>
+</div>  
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base','form', function () {
+    var index = parent.layer.getFrameIndex(window.name); 
+    $('#form').isForm((rel)=>{
+        parent.window.getMenu('plugin');
+        parent.layer.close(index);
+    });
+});
+</script>  
+{/block}

@@ -1,0 +1,42 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-header tab">
+        <div class="tab-item text-bold"><a href="{:url('tenant/plugin/index')}">我的扩展</a></div>
+        <div class="tab-item text-bold active"><a href="{:url('tenant/plugin/store')}">扩展商店</a></div>
+        <div class="col"></div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-space">
+            <thead><tr><th>扩展名称</th><th class="w80">价格</th><th class="w80">启用</th></tr></thead>
+            <tbody>
+                {foreach $list as $rs}
+                <tr>
+                    <td>
+                        <div class="tile">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.logo}"></div>
+                            <div class="tile-content">
+                                <div class="tile-title h5">{$rs.title}</div>
+                                <div class="tile-subtitle mt-4">{$rs.about??''}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><sapn class="widget-price text-error text-bold">{$rs.price}</sapn></td>
+                    <td>
+                        <button url="{:url('plugin/onbuy',['id' => $rs.id])}" class="btn win" outline primary>启用</button>
+                    </td> 
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">{$list|raw}</div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.win').win({reload:true})
+})
+</script>
+{/block}

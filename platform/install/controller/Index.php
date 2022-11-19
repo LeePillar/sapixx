@@ -32,23 +32,22 @@ class Index extends BaseController
     */
     public function index($i = '')
     {
-        $view['version']   = version_compare(PHP_VERSION,'8.0.2','>=')?'check-square' : 'x-square';
-        $view['pdo']       = extension_loaded('pdo')?'check-square' : 'x-square';
-        $view['pdo_mysql'] = extension_loaded('pdo_mysql')?'check-square' : 'x-square';
-        $view['gd']        = extension_loaded('gd')?'check-square' : 'x-square';
-        $view['dom']       = extension_loaded('dom')?'check-square' : 'x-square';
-        $view['dom']       = extension_loaded('dom')?'check-square' : 'x-square';
-        $view['fileinfo']  = extension_loaded('fileinfo') ?'check-square':'x-square';
-        $view['sodium']    = extension_loaded('sodium') ?'check-square':'x-square';
-        $view['config']    = is_writable(PATH_TOOT.'config')?'check-square': 'x-square';
-        $view['runtime']   = is_writable(PATH_RUNTIME)?'check-square': 'x-square';
-        $view['res']       = is_writable(PATH_RES)?'check-square' : 'x-square';
-        $view['static']    = is_writable(PATH_STATIC)?'check-square':'x-square';
-        $view['curl_init'] = function_exists('curl_init') ?'check-square':'x-square';
-        $view['env']       = (file_exists(PATH_TOOT.'.env') && is_writable(PATH_TOOT.'.env')) ?'check-square':'x-square';
+        $view['version']   = version_compare(PHP_VERSION,'8.0.2','>=')?'check-lg' : 'x-lg';
+        $view['pdo']       = extension_loaded('pdo')?'check-lg' : 'x-lg';
+        $view['pdo_mysql'] = extension_loaded('pdo_mysql')?'check-lg' : 'x-lg';
+        $view['gd']        = extension_loaded('gd')?'check-lg' : 'x-lg';
+        $view['dom']       = extension_loaded('dom')?'check-lg' : 'x-lg';
+        $view['fileinfo']  = extension_loaded('fileinfo') ?'check-lg':'x-lg';
+        $view['sodium']    = extension_loaded('sodium') ?'check-lg':'x-lg';
+        $view['config']    = is_writable(PATH_TOOT.'config')?'check-lg': 'x-lg';
+        $view['runtime']   = is_writable(PATH_RUNTIME)?'check-lg': 'x-lg';
+        $view['res']       = is_writable(PATH_RES)?'check-lg' : 'x-lg';
+        $view['static']    = is_writable(PATH_STATIC)?'check-lg':'x-lg';
+        $view['curl_init'] = function_exists('curl_init') ?'check-lg':'x-lg';
+        $view['env']       = (file_exists(PATH_TOOT.'.env') && is_writable(PATH_TOOT.'.env')) ?'check-lg':'x-lg';
         if($i == 'success' && Session::has('step1')){
             Session::delete('step1');
-            if(in_array('x-square',$view)){
+            if(in_array('x-lg',$view)){
                 return redirect((string)url('index/index'));
             }
             Session::set('step2','step2');

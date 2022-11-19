@@ -13,26 +13,18 @@ use base\model\SystemAppsConfig;
 use EasyWeChat\Pay\Application;
 use util\Dir;
 use util\Sign;
-use Hashids\Hashids;
 
 class Apps extends Common{
 
-    //初始化
-    protected function initialize()
-    {
-        $tenant = app('tenant')->getLogin();
-        if(empty($tenant)){
-            $this->jump('没有登录,禁止访问',(string)url('tenant/index/logout'));
-        }
-        if($tenant->lock_config || $tenant->parent_id){
-            $this->jump('没有权限访问应用配置功能');
-        }
-        $apps = app('tenant')->getApps();
-        if(empty($apps)){
-            header('Location:'.(string)url('tenant/store/index'));
-            exit();
-        }
+
+    /**
+     * 高级权限控制
+     * @return void
+     */
+    protected function initialize(){
+        $this->middleware('platform\tenant\middleware\AppsManage');
     }
+
 
     /**
      * 关于应用
@@ -283,8 +275,7 @@ class Apps extends Common{
             return enjson(0,'目录Runtime无写权限,请联系你的服务商');
         }
         //保存目录(如果没有权限自动创建)
-        $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-        $storage = PATH_STORAGE.DS.$this->request->app->appname.DS.$hashids->encode($this->request->apps->id).DS;
+        $storage = PATH_STORAGE.DS.$this->request->app->appname.DS.idcode($this->request->apps->id,false).DS;
         if(!Dir::isDirs($storage)){
             Dir::mkDirs($storage);
         }

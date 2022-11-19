@@ -15,8 +15,8 @@
         {foreach $list as $vo}
         <tr>
             <td><i class="bi bi-phone text-large"></i> {$vo.phone_id}</td>
-            <td>{$vo.group.title}</td>
-            <td>{$vo.group.rank_text}</td>
+            <td>{$vo.group.title??'全局角色'}</td>
+            <td>{$vo.group.rank_text??'全局等级'}</td>
             <td>{$vo.username}</td>
             <td><a class="act status status-{$vo.is_lock?'':'success'}" href="{:url('acl/islock',['id'=>$vo.id])}" title="锁定/正常">{$vo.is_lock?'锁定':'正常'}</a></td>
             <td>{$vo.create_time|date='Y-m-d H:i'}</td>

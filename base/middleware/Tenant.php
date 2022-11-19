@@ -12,6 +12,8 @@ use think\App;
 use think\facade\Request;
 use think\facade\View;
 use base\model\SystemApps;
+use base\model\SystemPlugins;
+
 class Tenant
 {
 
@@ -60,10 +62,27 @@ class Tenant
             $this->app->tenant->clearLogin();
             return response($script);
         }
-        //租户使用的系统应用
         $request->app = $request->apps?$request->apps->app:false;
-        if($request->app && !isset(array_flip(SYSAPP)[$module]) && $module != $request->app->appname){
-            abort(403,'请先开通应用,已开通的需要先切换管理.');
+        if($request->import == 'plugin' && $request->apps){
+            //应用开通的扩展判断
+            $request->plugins = SystemPlugins::where(['apps_id' => $request->apps->id,'plugin_id' => $request->plugin->id,'is_lock' => 0])->find();
+            if(empty($request->plugins)){
+                abort(403,'当前应用的扩展还没有启用');
+            }
+            //判断是否子管理(子管理,权限组,扩展权限)
+            if($request->tenant->parent_apps_id == $request->apps->id && $request->tenant->group_id){
+                if(!$request->plugins->group_ids){
+                    abort(403,'请联系你的管理员开通扩展访问权限');
+                }
+                if(!in_array($request->tenant->group_id,explode(',',$request->plugins->group_ids ))){
+                    abort(403,'你没有当前扩展的访问权限');
+                }
+            }
+        }else{
+            //是否跨应用访问
+            if($request->app && !isset(array_flip(SYSAPP)[$module]) && $module != $request->app->appname){
+                abort(403,'请先开通应用,已开通的需要先切换管理.');
+            }
         }
         //判断应用过期
         if($request->apps && $request->apps->getData('end_time') <= time()){

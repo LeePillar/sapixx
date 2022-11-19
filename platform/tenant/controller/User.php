@@ -14,11 +14,22 @@ use base\model\SystemUserRuid;
 class User extends Common
 {
 
+    /**
+     * 高级权限控制
+     * @return void
+     */
+    protected function initialize(){
+        $this->middleware('platform\tenant\middleware\AppsManage')->except('selectWin');
+    }
+
    /**
      * 会员列表
      */
     public function index()
     {
+        if($this->request->tenant->lock_config || $this->request->tenant->parent_id){
+            $this->jump('没有权限访问应用配置功能');
+        }
         $keyword = $this->request->param('keyword/s');
         $types   = $this->request->param('types/d',0);
         switch ($types) {

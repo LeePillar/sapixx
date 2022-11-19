@@ -10,7 +10,6 @@ namespace base\middleware;
 use think\App;
 use think\facade\View;
 use base\model\SystemAppsClient;
-use Hashids\Hashids;
 
 class Wechat
 {
@@ -56,16 +55,11 @@ class Wechat
      */
     protected function getApps()
     {
-        $get_id = $this->app->request->param('get/s');
-        if(empty($get_id)){
+        $client_id = $this->app->request->param('get/s');
+        if (empty($client_id) || !preg_match('/^([a-zA-Z0-9]){6}$/',$client_id)) {
             return false;
         }
-        $hashids   = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-        $client_id = $hashids->decode($get_id);
-        if(empty($client_id[0])){
-            return false;
-        }
-        return SystemAppsClient::where(['id' => intval($client_id[0])])->cache(true)->find();
+        return SystemAppsClient::where(['id' => idcode($client_id)])->cache(true)->find();
     }
 
     public function end(\think\Response $response)

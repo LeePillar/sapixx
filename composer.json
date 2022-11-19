@@ -27,15 +27,14 @@
         "topthink/think-view": "^1.0",
         "topthink/think-captcha": "^3.0",
         "topthink/think-api": "^1.0",
-        "topthink/think-filesystem": "^1.0",
-        "firebase/php-jwt": "^5.2",
+        "firebase/php-jwt": "^6.0",
         "ramsey/uuid": "^4.1",
         "godruoyi/php-snowflake": "^2.0",
-        "thans/thinkphp-filesystem-cloud": "^1.0",
         "w7corp/easywechat": "^6.7",
         "hashids/hashids": "^4.1",
-        "yansongda/pay": "~3.1.0",
-        "php-di/php-di": "^6.3"
+        "yansongda/pay": "~3.2.0",
+        "php-di/php-di": "^6.3",
+        "apixx/think-filesystem": "^1.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2"

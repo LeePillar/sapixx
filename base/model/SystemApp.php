@@ -88,7 +88,7 @@ class SystemApp extends BaseModel{
     public static function offApp(){
         $install_app = self::column('appname');
         $waiting_app = array_values(Ary::array_remove_empty(array_diff(Dir::getDir(PATH_APP,FORBIDEN),$install_app)));
-        $system_app  = array_values(Ary::array_remove_empty(array_diff(Dir::getDir(PATH_SAPIXX,SYSAPP),$install_app)));
+        $system_app  = array_values(Ary::array_remove_empty(array_diff(Dir::getDir(PATH_SAPIXX, ['admin','tenant','apis','install']),$install_app)));
         $install     = array_merge($waiting_app,$system_app);
         $app = [];
         foreach ($install as $key => $value) {

@@ -42,7 +42,16 @@ class BaseModel extends \think\Model
         return $this->invoke(fn(Request $request) => $query->where('uid',$uid ?: ($request->user->id ?? 0)));
     }
 
-
+    /**
+     * 插件查询条件(请确保应用表中有plugin_id字段再使用)
+     * @param integer $uid
+     * @return void
+     */
+    public function scopePlugin($query, int $plugin_id)
+    {
+        return $query->where('plugin_id',$plugin_id);
+    }
+    
     /**
      * 根据经纬度查询一个圆周内的距离
      * 使用本方法表中必须有经longitude,纬latitude两个字段

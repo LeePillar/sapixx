@@ -5,10 +5,10 @@
 return [
     [
         'name' => '扩展中心',
-        'icon' => 'info-square',
+        'icon' => 'x-diamond',
         'menu' => [
             ['name' =>'我的扩展','url'=> (string)url('plugin/index')],
-            ['name' =>'扩展商店','url'=> (string)url('plugin/webstore')],
+            ['name' =>'扩展商店','url'=> (string)url('plugin/store')],
         ]
     ] 
 ];

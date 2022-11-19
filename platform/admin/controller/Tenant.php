@@ -11,6 +11,7 @@ use base\model\SystemTenant;
 use base\model\SystemApps;
 use base\model\SystemTenantBill;
 use base\model\SystemAgent;
+use util\Ary;
 
 class Tenant extends Common{
 
@@ -174,5 +175,32 @@ class Tenant extends Common{
     public function lockConfig(int $id){
         SystemTenant::lockConfig($id);
         return enjson(200);
+    }
+
+    /**
+     * 批量删除账单
+     * @param integer $id 用户ID
+     */
+    public function multiAction(){
+        if(IS_POST){
+            $ids  = $this->request->param('ids/s');
+            $ids = Ary::array_int($ids,true);
+            if(empty($ids)){
+                return;
+            }
+            SystemTenantBill::where(['id' =>$ids])->delete();
+            return enjson();
+        }
+    }
+
+    /**
+     * 批量清空失败账单
+     * @param integer $id 用户ID
+     */
+    public function multiDelete(){
+        if(IS_POST){
+            SystemTenantBill::where(['state' => 0])->delete();
+            return enjson();
+        }
     }
 }

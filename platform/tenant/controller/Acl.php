@@ -14,6 +14,14 @@ use util\Ary;
 
 class Acl extends Common{
 
+     /**
+     * 高级权限控制
+     * @return void
+     */
+    protected function initialize(){
+        $this->middleware('platform\tenant\middleware\AppsManage');
+    }
+ 
     /**
      * 帐号管理
      */

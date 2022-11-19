@@ -11,6 +11,7 @@ use base\model\SystemTenant;
 use base\model\SystemApps;
 use base\model\SystemTenantGroup;
 use base\model\SystemPlugin;
+use base\model\SystemPlugins;
 use think\facade\Config;
 use think\facade\Cookie;
 use util\Ary;
@@ -26,7 +27,11 @@ class Index extends Common
         $view['is_siderbar'] = false;
         if($this->request->apps){
             if(empty(app('configs')->siderbar($this->request->app->appname))){
-                $plugin = SystemPlugin::whereFindInSet('app_ids',$this->request->app->id)->find(); //检查插件
+                if($this->request->tenant->parent_apps_id == $this->request->apps->id && $this->request->tenant->group_id){
+                    $plugin = SystemPlugins::where(['apps_id' => $this->request->apps->id,'is_lock' => 0])->whereFindInSet('group_ids',$this->request->tenant->group_id)->count();
+                }else{
+                    $plugin = SystemPlugin::whereFindInSet('app_ids',$this->request->app->id)->count(); //检查插件
+                }
                 if($plugin){
                     $view['is_siderbar'] = true;
                 }
@@ -57,52 +62,74 @@ class Index extends Common
     {
         try {
             if($this->request->apps){
-                //判断SiderBar的菜单;
+                //判断来自哪个SiderBar的菜单;
                 $menu = (empty($menu) || $menu == 'tenant')?'tenant':'tenant_'.$menu; 
-                //判断是否自己的应用
+                //是否子帐号
                 if($this->request->tenant->parent_apps_id == $this->request->apps->id){
-                    $menus = $this->app->configs->tenant($this->request->app->appname,$menu);   //全部菜单
-                    $info = SystemTenantGroup::where(['id' => $this->request->tenant->group_id])->field('menu')->apps()->find(); //读取数据库中权限组权限
-                    $access_menu = empty($info)?[]:array_flip($info->menu);
-                    //仅显示有选择的菜单
-                    $data = [];
-                    foreach ($menus as $key => $value) {
-                        $data[$key]['name'] = $value['name'];
-                        if(!empty($value['menu'])){
-                            foreach ($value['menu'] as $k => $val) {
-                                if(isset($val['url']) && isset($access_menu[md5($val['url'])])){
-                                    $data[$key]['menu'][$k]['name'] = $val['name'];
-                                    $data[$key]['menu'][$k]['url']  = $val['url'];
+                    if($menu == 'tenant_plugin'){ //扩展
+                        $menus = $this->pluginMneu();
+                    }else{
+                        $menus = $this->app->configs->tenant($this->request->app->appname,$menu);   //全部菜单
+                        if($this->request->tenant->group_id){
+                            $info = SystemTenantGroup::where(['id' => $this->request->tenant->group_id])->apps()->field('menu')->find(); //读取数据库中权限组权限
+                            $access_menu = empty($info)?[]:array_flip($info->menu);
+                            //仅显示有选择的菜单
+                            $data = [];
+                            foreach ($menus as $key => $value) {
+                                $data[$key]['name'] = $value['name'];
+                                if(!empty($value['menu'])){
+                                    foreach ($value['menu'] as $k => $val) {
+                                        if(isset($val['url']) && isset($access_menu[md5($val['url'])])){
+                                            $data[$key]['menu'][$k]['name'] = $val['name'];
+                                            $data[$key]['menu'][$k]['url']  = $val['url'];
+                                        }
+                                    }
+                                }
+                                if(empty($data[$key]['menu'])){
+                                    unset($data[$key]);
                                 }
                             }
-                        }
-                        if(empty($data[$key]['menu'])){
-                            unset($data[$key]);
+                            $menus = Ary::reform_keys($data);
                         }
                     }
-                    $menus = Ary::reform_keys($data);
                 }else{
-                    $menus = $this->app->configs->tenant($this->request->app->appname,$menu); //菜单
-                    if($menu == 'tenant_plugin' && empty($menus)){
-                        $tenant_plugin = config('tenant_plugin');
-                        $menus = array_merge($menus,$tenant_plugin);
+                    if($menu == 'tenant_plugin'){ //扩展
+                        $menus = array_merge($this->pluginMneu(),config('tenant_plugin'));
                     }else{
-                        $about_menus = ($menu=='tenant'?($this->request->tenant->lock_config?[]:config('tenant')):[]); //关于应用
-                        $menus = array_merge($menus,$about_menus);
+                        $menus = $this->app->configs->tenant($this->request->app->appname,$menu);
+                        if($menu == 'tenant'){ //关于应用
+                            $menus = array_merge($menus,$this->request->tenant->lock_config?[]:config('tenant'));
+                        }
                     }
                 }
             }else{
                 $menus = config('other');
             }
-            //  //插件
-            //  $plugin = SystemPlugin::whereFindInSet('app_ids',$this->request->app->id)->count(); //检查插件
-            //  if($plugin && !empty($siderbar)){
-            //      $siderbar = array_merge($siderbar,[['name' =>'扩展','icon' =>'x-diamond','anchor' =>'plugin']]);
-            //  }
             return enjson(204,$menus);
         } catch (\Exception $e){
             return enjson(204);
         }
+    }
+
+    /**
+     * 读取插件菜单
+     */
+    protected function pluginMneu(){
+        $plugin_menu = [];
+        if($this->request->tenant->parent_apps_id == $this->request->apps->id && $this->request->tenant->group_id){
+            $plugin_id = SystemPlugins::where(['apps_id' => $this->request->apps->id,'is_lock' => 0])->whereFindInSet('group_ids',$this->request->tenant->group_id)->column('plugin_id');
+        }else{
+            $plugin_id = SystemPlugins::where(['apps_id' => $this->request->apps->id,'is_lock' => 0])->column('plugin_id');
+        }
+        if(!empty($plugin_id)){
+            $plugin = SystemPlugin::whereIn('id',$plugin_id)->column('appname');
+            if(!empty($plugin)){
+                foreach ($plugin as $value) {
+                    $plugin_menu[] =  $this->app->configs->plugin($value,'tenant');
+                }
+            }
+        }
+        return $plugin_menu;
     }
 
    /**
@@ -115,9 +142,9 @@ class Index extends Common
             $siderbar = [];
             if($this->request->apps){
                 $siderbar = $this->app->configs->siderbar($this->request->app->appname);
-                $info = SystemTenantGroup::where(['id' => $this->request->tenant->group_id])->apps()->find();
-                $access_menu = $info?array_flip($info->menu):[];
-                if($this->request->tenant->parent_apps_id == $this->request->apps->id){
+                if($this->request->tenant->parent_apps_id == $this->request->apps->id && $this->request->tenant->group_id){
+                    $info = SystemTenantGroup::where(['id' => $this->request->tenant->group_id])->apps()->find();
+                    $access_menu = $info?array_flip($info->menu):[];
                     foreach ($siderbar as $key => $var) {
                         $siderbar[$key]['menu'] = 0;
                         $menu = app('configs')->tenant($this->request->app->appname,$var['anchor']=='tenant'?'tenant':'tenant_'.$var['anchor']);
@@ -139,7 +166,23 @@ class Index extends Common
                 //插件
                 $plugin = SystemPlugin::whereFindInSet('app_ids',$this->request->app->id)->count(); //检查插件
                 if($plugin){
-                    $siderbar = array_merge($siderbar,[['name' =>'扩展','icon' =>'x-diamond','anchor' =>'plugin']]);
+                    $isPlugin = true;
+                    //子帐号权限判断
+                    if($this->request->tenant->parent_apps_id == $this->request->apps->id){
+                        if($this->request->tenant->group_id){
+                            $plugins = SystemPlugins::where(['apps_id' => $this->request->apps->id,'is_lock' => 0])->whereFindInSet('group_ids',$this->request->tenant->group_id)->count();
+                        }else{
+                            $plugins = SystemPlugins::where(['apps_id' => $this->request->apps->id,'is_lock' => 0])->count();
+                        }
+                        $isPlugin = $plugins?true:false;
+                    }
+                    if($isPlugin){
+                        if(empty($siderbar)){
+                            $siderbar = array_merge($siderbar,[['name' =>'首页','icon' =>'house','anchor' =>'tenant'],['name' =>'扩展','icon' =>'x-diamond','anchor' =>'plugin']]);
+                        }else{
+                            $siderbar = array_merge($siderbar,[['name' =>'扩展','icon' =>'x-diamond','anchor' =>'plugin']]);
+                        }
+                    }
                 }
             }
             return enjson(204,$siderbar);
@@ -219,8 +262,8 @@ class Index extends Common
                 'action_info' => [
                     'scene' => [
                         'scene_str' => $access_code
-                        ]
                     ]
+                ]
             ])->postJson('cgi-bin/qrcode/create');
             Cookie::set('login_ticket',$access_code,$response['expire_seconds']);
             return enjson(204,['url' => $response['url']]);

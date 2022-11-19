@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hans-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="application-name" content="{$Think.const.SYSNAME} ({$Think.const.BASEVER})">
+<meta name="copyright" content="{$Think.const.SYSNAME} Designed & Developed by BrownStone">
+<meta name="applicable-device" content="pc">
+<meta name="csrf-token" content="{:token()}">
+<title>{$configs.name??''}</title>
+<meta name="description" content="{$configs.about??''}">
+<script type="text/javascript" src="__PUBLIC__/lib/do.js"></script>
+<script type="text/javascript" src="__PUBLIC__/lib/package.js"></script>
+<script src="__PUBLIC__/js/alpine.min.js" defer></script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/index/style.css" />{block name="style"}{/block}</head>
+<body id="app">
+    <div class="sidebar hide-lg">
+        <div class="logo"><a href="{$web.url}"><img class="img-responsive" src="{$web.logo}" /></a></div>
+        <div id="menu" class="scrollbar">
+            <ul class="menu">
+                <li class="menu-item text-bold"><a href="{$web.url}" class="text-error"><i class="icon bi-house-fill icon-2x mr-8"></i>首页</a></li>
+                <li class="menu-item mb-8"><a href="https://www.sapixx.com"><i class="icon bi-question-circle icon-2x mr-8"></i>开发手册</a></li>
+                <li class="divider"></li>
+                <li class="menu-item"><a href="{:url('apixx/tenant/contract')}"><i class="icon bi-clipboard-check icon-2x mr-8"></i>商业中心</a></li>
+                <li class="menu-item"><a href="{:url('apixx/index/license')}"><i class="icon bi-clipboard-minus icon-2x mr-8"></i>开源许可</a></li>
+                <li class="divider"></li>
+                <li class="menu-item text-bold">应用类型</li>
+                {foreach $cate as $rs}
+                <li class="menu-item">
+                    <a href="{:url('index/index/index',['cate' => $rs.id])}" class="cols col-gapless space space-align-center">
+                        <div class="col-auto"><img class="img-responsive mr-8 w20 h20" src="{$rs.logo}" /></div><div class="col">{$rs.alias_title}</div>
+                    </a>
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+        <div class="footer space-justify-center text-gray text-tiny">
+            <div class="divider"></div>
+            <p>{$web.copyright}</p>
+            <p><a class="text-gray" href="https://beian.miit.gov.cn/" target="_blank">{$web.icp}</a></p>
+            <p>Powered By <a class="text-gray" href="https://www.sapixx.com" target="_blank">{$Think.const.SYSNAME} ({$Think.const.BASEVER})</a></p>
+        </div>
+    </div>
+    <div class="body">
+        <div class="header space space-align-center">
+            <div class="tile tile-centered">
+            <div class="tile-icon show-lg"><img src="/common/img/logo.png" class="rounded img-responsive"></div>
+                <div class="tile-content">
+                    <div class="w400 hide-lg">
+                        <form id="search" action="{:url('index/index/index')}" class="input-group ml-16 form-lg">
+                            <input autocomplete="off" name="keyword" type="text" class="form-input" value="" placeholder="输入应用名称试一试">
+                            <button type="submit" class="btn input-group-btn" primary outline>搜索</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="tile-action">
+                    <a href="{:url('index/index/index')}" class="btn hide-sm" text gray><i class="icon bi-box mr-8"></i>应用中心</a>
+                    <a href="https://gitee.com/goodline/sapixx" target="__blank" class="btn hide-sm" text gray><i class="icon bi-github mr-8"></i>Gitee</a>
+                    <a href="{:url('tenant/index/index')}" class="btn ml-24" primary>登录</a>
+                </div>
+            </div>
+        </div>
+        <div class="docs-content">{block name="main"}{/block}</div>
+    </div>
+</body>
+{block name="js"}{/block}</html>

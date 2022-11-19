@@ -19,7 +19,7 @@ class InitApp
      * 系统版本
      * @var string
      */
-    protected $version = 'v2.2.0';
+    protected $version = 'v2.3.0';
     
     /**
      * 应用名称
@@ -44,7 +44,7 @@ class InitApp
      * 禁止应用名称
      * @var array
      */
-    protected $forbidden = ['admin','tenant','apis','install','index','cloud','web','api','plugin'];
+    protected $forbidden = ['admin','tenant','apis','install','web','api','plugin'];
 
     /**
      * 初始化行为入口

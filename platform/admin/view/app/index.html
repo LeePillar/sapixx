@@ -11,7 +11,7 @@
     </div>
 </div>
 <div class="card-body">
-    <table class="table table-hover  table-space">
+    <table class="table table-hover table-space">
     <thead>
         <tr>
             <th class="w60 text-center">排序</th>
@@ -25,7 +25,7 @@
     </thead>
     <tbody>
     {foreach $offapp as $rs}
-        <tr>
+        <tr class="bg-error-light">
             <td class="w60 text-center"><input disabled name="sort" class="form-input text-center" type="text" value="0"  /></td>
             <td>
                 <div class="tile tile-centered">
@@ -48,16 +48,16 @@
             <td class="w60 text-center"><input name="sort" class="form-input text-center" type="text" value="{$rs.sort}" data-id="{$rs.id}" /></td>
             <td>
                 <div class="tile tile-centered">
-                    <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.logo}"></div>
-                    <div class="tile-content">
+                    <a class="tile-icon" href="{:url('app/details',['id' => $rs->id])}"><img class="w60 rounded img-responsive" src="{$rs.logo}"></a>
+                    <a class="tile-content" href="{:url('app/details',['id' => $rs->id])}">
                         <div class="text-dark">{$rs.title} <span class="text-tiny">v{$rs.config.var??'1.0.0'}</span></div>
                         <div class="text-gray">{$rs.about}</div>
-                    </div>
+                    </a>
                     <div class="tile-action btn-group">
                     {if isset($rs.config.is_admin) && $rs.config.is_admin == 1}
-                        <button class="btn tips tips-left is_admin" data-tips="应用管理" href="{:url('app/manage',['id' => $rs->id])}" outline><i class="icon bi-layout-text-window-reverse"></i> 管理</button>
+                        <button class="btn tips tips-left is_admin" data-tips="管理应用" href="{:url('app/manage',['id' => $rs->id])}" outline><i class="icon bi-layout-text-window-reverse"></i> 管理</button>
                     {/if}
-                        <a class="btn tips tips-left" data-tips="应用租户" href="{:url('app/details',['id' => $rs->id])}" outline><i class="icon bi-layout-text-window-reverse"></i> 租户</a>
+                        <a class="btn tips tips-left" data-tips="应用详细" href="{:url('app/details',['id' => $rs->id])}" outline><i class="icon bi-clipboard"></i> 详情</a>
                     </div>
                 </div>
             </td>
@@ -74,7 +74,7 @@
     </tbody>
     </table>
 </div>
-<div class="{$list->hasPages()?'card-footer':'d-hide'}">{$list|raw}</div>
+<div class="card-footer">{$list|raw}</div>
 </div>
 {/block}
 {block name="js"}

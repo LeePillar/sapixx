@@ -237,6 +237,53 @@ CREATE TABLE `ai_system_agent` (
 INSERT INTO `ai_system_agent` VALUES ('1', '金牌代理', '100.00', '100.00', '100.00', '100.00', '6', '1');
 
 -- ----------------------------
+-- Table structure for ai_system_config
+-- ----------------------------
+DROP TABLE IF EXISTS `ai_system_config`;
+CREATE TABLE `ai_system_config`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `config` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `update_time` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统配置';
+
+-- ----------------------------
+-- Table structure for ai_system_plugin
+-- ----------------------------
+DROP TABLE IF EXISTS `ai_system_plugin`;
+CREATE TABLE `ai_system_plugin`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `appname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `logo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `about` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `price` decimal(10, 2) NULL DEFAULT 0.00,
+  `is_lock` tinyint(1) NULL DEFAULT 0,
+  `sort` int(11) NULL DEFAULT 0,
+  `create_time` int(11) NULL DEFAULT NULL,
+  `update_time` int(11) NULL DEFAULT NULL,
+  `app_ids` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='应用商店';
+
+-- ----------------------------
+-- Table structure for ai_system_plugins
+-- ----------------------------
+DROP TABLE IF EXISTS `ai_system_plugins`;
+CREATE TABLE `ai_system_plugins`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `plugin_id` int(11) NULL DEFAULT 0 COMMENT '开通的插件ID',
+  `apps_id` int(11) NULL DEFAULT 0,
+  `tenant_id` int(11) NULL DEFAULT NULL,
+  `is_lock` tinyint(1) NULL DEFAULT 0 COMMENT '0正常 1锁定',
+  `group_ids` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '允许访问的权限组',
+  `update_time` bigint(20) NULL DEFAULT NULL,
+  `create_time` bigint(20) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='租户应用';
+
+-- ----------------------------
 -- Table structure for ai_system_admin
 -- ----------------------------
 DROP TABLE IF EXISTS `ai_system_admin`;

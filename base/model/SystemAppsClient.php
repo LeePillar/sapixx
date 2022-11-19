@@ -8,7 +8,6 @@
  */
 namespace base\model;
 use base\BaseModel;
-use Hashids\Hashids;
 
 class SystemAppsClient extends BaseModel
 {
@@ -67,8 +66,7 @@ class SystemAppsClient extends BaseModel
     //ID加密
     public function getIdCodeAttr($value,$data)
     {
-        $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-        return $hashids->encode($data['id']);
+        return idcode($data['id'],false);
     }
 
     /**

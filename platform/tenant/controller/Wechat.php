@@ -15,33 +15,23 @@ use EasyWeChat\Kernel\Form\Form;
 
 class Wechat extends Common{
 
-    protected $client;
-
     /**
-     * 控制是否允许进行下面的流程
+     * 高级权限控制
+     * @return void
      */
-    protected function initialize()
-    {
-        $apps = app('tenant')->getApps();
-        if(!$apps){
-            return redirect((string)url('tenant/store/index'))->send();
-        }
-        if(!$apps->app->config['is_open_wechat']){
-            $this->error('当前应用,需手动配置接入,不支持一键授权');
-        }
-        $title = array_column($apps->client->toArray(),'title');
-        $value = $apps->client->toArray();
-        $this->client = array_combine($title,$value);
+    protected function initialize(){
+        $this->middleware('platform\tenant\middleware\AppsManage');
     }
+
  
     /**
      * 微信小程序
      */
     public function wechatapp(){
-        $view['info'] = $this->client['wechatapp']??[];
+        $view['info'] = $this->request->client['wechatapp']??[];
         $view['send'] = [];
-        if(isset($this->client['wechatapp'])){
-            $view['send'] = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+        if(isset($this->request->client['wechatapp'])){
+            $view['send'] = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
         }
         $this->bread([['name' =>'关于应用','url'=>(string)url('apps/index')],['name' =>'小程序']]);
         return view()->assign($view);
@@ -51,7 +41,7 @@ class Wechat extends Common{
      * 微信公众号
      */
     public function wechatmp(){
-        $view['info'] = $this->client['wechatmp']??[];
+        $view['info'] = $this->request->client['wechatmp']??[];
         $this->bread([['name' =>'关于应用','url'=>(string)url('apps/index')],['name' =>'公众号']]);
         return view()->assign($view);
     }
@@ -61,19 +51,22 @@ class Wechat extends Common{
      */
     public function updateSetting(){
         if(IS_POST){
-            if(empty($this->client['wechatapp']) || empty($this->client['wechatapp']['appid'])){
+            if(empty($this->request->client['wechatapp']) || empty($this->request->client['wechatapp']['appid'])){
                 return enjson(0,'未授权,禁止设置同步小程序信息');
             }
-            //读取配置
-            $app = app('wechat')->openPlatform();
-            $data['json'] = [
-                'component_access_token' => $app->getComponentAccessToken()->getToken(),
-                'component_appid'        => $app->getAccount()->getAppId(),
-                'authorizer_appid'       => $this->client['wechatapp']['appid']
-            ];
-            $response = $app->getClient()->post('cgi-bin/component/api_get_authorizer_info',$data);
-            if(($response['errcode']??0) != 0){
-                return enjson(0,$response['errmsg']);
+            try {
+                $app = app('wechat')->openPlatform();
+                $data['json'] = [
+                    'component_access_token' => $app->getComponentAccessToken()->getToken(),
+                    'component_appid'        => $app->getAccount()->getAppId(),
+                    'authorizer_appid'       => $this->request->client['wechatapp']['appid']
+                ];
+                $response = $app->getClient()->post('cgi-bin/component/api_get_authorizer_info',$data);
+                if(($response['errcode']??0) != 0){
+                    return enjson(0,$response['errmsg']);
+                } 
+            } catch (\Exception $e) {
+                return enjson(500,$e->getMessage());
             }
             SystemApps::where(['id' => $this->request->apps->id])->update([
                 'title'      => $response['authorizer_info']['nick_name'],
@@ -91,7 +84,7 @@ class Wechat extends Common{
      */
     public function setDomain(){
         if(IS_POST){
-            if(empty($this->client['wechatapp'])){
+            if(empty($this->request->client['wechatapp'])){
                 return enjson(0,'未授权,禁止设置小程序安全域名信息');
             }
             $app = app('wechat')->client('wechatapp');
@@ -100,10 +93,10 @@ class Wechat extends Common{
             if(($response['errcode']??0) != 0){
                 return enjson(0,$response['errmsg']);
             }
-            $rel = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+            $rel = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
             if(empty($rel)){
                 $data['apps_id']   = $this->request->apps->id;
-                $data['client_id'] = $this->client['wechatapp']['id'];
+                $data['client_id'] = $this->request->client['wechatapp']['id'];
                 $data['is_commit'] = 0;
                 $data['state']     = 0;
                 SystemAppsRelease::create($data);
@@ -118,10 +111,10 @@ class Wechat extends Common{
      */
     public function updataCode(){
         if(IS_POST){
-            if(empty($this->client['wechatapp'])){
+            if(empty($this->request->client['wechatapp'])){
                 return enjson(0,'未授权,禁止设置小程序安全域名信息');
             }
-            $rel = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+            $rel = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
             if(empty($rel)){
                 return enjson(403,'请先[设置域名]');
             }
@@ -129,13 +122,13 @@ class Wechat extends Common{
             $data['user_version'] = (string)$this->request->app['config']['var'];
             $data['user_desc']    = '应用发布或升级';
             $data['ext_json']     = json_encode([
-                'extAppid' => (string)$this->client['wechatapp']['appid'],
+                'extAppid' => (string)$this->request->client['wechatapp']['appid'],
                 'ext' => [
                     "name" => (string)$this->request->apps->title,
                     "attr" => [
                         'host'       => (string)(config('api.api_sub_domain')?:'https://'.$this->request->host()),
-                        'api_id'     => (string)$this->client['wechatapp']['api_id'],
-                        'api_secret' => (string)$this->client['wechatapp']['api_secret'],
+                        'api_id'     => (string)$this->request->client['wechatapp']['api_id'],
+                        'api_secret' => (string)$this->request->client['wechatapp']['api_secret'],
                     ]
                 ]
             ],JSON_UNESCAPED_UNICODE);
@@ -158,10 +151,10 @@ class Wechat extends Common{
      * 获取小程序体验码
      */  
     public function getQrcode(){
-        if(empty($this->client['wechatapp'])){
+        if(empty($this->request->client['wechatapp'])){
             return enjson(403,'未授权,禁止设置小程序安全域名信息');
         }
-        $rel = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+        $rel = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
         if(empty($rel)){
             return enjson(403,'请先[设置域名]');
         }
@@ -173,10 +166,10 @@ class Wechat extends Common{
      * 提交小程序微信审核
      */  
     public function submitWechat(){
-        if(empty($this->client['wechatapp'])){
+        if(empty($this->request->client['wechatapp'])){
             $this->error('未授权,禁止设置小程序安全域名信息');
         }
-        $release  = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+        $release  = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
         if(empty($release)){
             $this->error('请先[设置域名]');
         }
@@ -263,14 +256,14 @@ class Wechat extends Common{
      */
     public function undocodeaudit(){
         if(IS_POST){
-            if(empty($this->client['wechatapp'])){
+            if(empty($this->request->client['wechatapp'])){
                 return enjson(403,'未授权,禁止设置小程序安全域名信息');
             }
             $response = app('wechat')->client('wechatapp')->data()->get('wxa/undocodeaudit');
             if(($response['errcode']??null) != 0){
                 return enjson(0,$response['errmsg']);
             }
-            $rel = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+            $rel = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
             $rel->is_commit = 0;
             $rel->state     = 0;
             $rel->save();
@@ -283,10 +276,10 @@ class Wechat extends Common{
      */
     public function release(){
         if(IS_POST){
-            if(empty($this->client['wechatapp'])){
+            if(empty($this->request->client['wechatapp'])){
                 return enjson(403,'未授权,禁止设置小程序安全域名信息');
             }
-            $rel = SystemAppsRelease::where(['client_id' => $this->client['wechatapp']['id']])->apps()->find();
+            $rel = SystemAppsRelease::where(['client_id' => $this->request->client['wechatapp']['id']])->apps()->find();
             if(empty($rel)){
                 return enjson(403,'请先点击[服务器域名]');
             }

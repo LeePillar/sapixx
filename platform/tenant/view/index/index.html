@@ -81,18 +81,18 @@ Do('http',() => {
 })
 </script>
 <script type="text/javascript">
-var getMenu=(menu)=>{
+function getMenu(menu){
     http.get("{:url('tenant/index/menu')}",{menu:menu}, (rel) => {
         $("#menu").html(template('menutpl',{data: rel.data}));
     }
 )}
-var siderbar=(menu)=>{
+function siderbar(menu){
     http.get("{:url('tenant/index/siderbar')}",(rel) => {if(rel.data.length){
         $(".layoutNav").html(template('siderbar',{data: rel.data}));
         $(".layoutBar").animate({left:0}).show();
     }})
 }
-var changeApp=()=>{return {
+function changeApp(){return {
     show:false,
     open(){
         this.show = !this.show
@@ -105,7 +105,7 @@ var changeApp=()=>{return {
         http.get("{:url('account/manage')}?id="+id)
     }
 }}
-var changeBar=()=>{return {
+function changeBar(){return {
     menu:'tenant',
     sider(menu) {
         this.menu = menu

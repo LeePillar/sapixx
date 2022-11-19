@@ -12,7 +12,6 @@ use think\App;
 use think\facade\Request;
 use base\model\SystemAppsClient;
 use think\facade\Config;
-use Hashids\Hashids;
 
 class Api
 {
@@ -87,8 +86,8 @@ class Api
      */
     protected function getApps($noSign)
     {
-        $get_id = Request::param('get/s');
-        if(empty($get_id)){
+        $client_id = Request::param('get/s');
+        if(empty($client_id)){
             $header = Request::header();
             if (empty($header['sapixx-apiid'])) {
                 return false;
@@ -99,16 +98,11 @@ class Api
             }
             return SystemAppsClient::where(['api_id' => $api_id])->cache(true)->find();
         }else{
-            if(strlen($get_id) != 6){
+            if (!preg_match('/^([a-zA-Z0-9]){6}$/',$client_id)) {
                 return false;
             }
             if(IS_DEBUG || ($noSign == 'api\service' || $noSign == 'controller\service')){
-                $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-                $client_id = $hashids->decode($get_id);
-                if(empty($client_id[0])){
-                    return false;
-                }
-                return SystemAppsClient::where(['id' => $client_id[0]])->cache(true)->find();
+                return SystemAppsClient::where(['id' => idcode($client_id)])->cache(true)->find();
             }
         }
     }

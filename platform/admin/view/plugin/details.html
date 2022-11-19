@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table table-space">
+        <table class="table table-hover table-space">
             <thead><tr><th>应用名称</th><th class="w80">解除绑定</th></tr></thead>
             <tbody>
             {foreach $applist as $rs}
@@ -59,7 +59,7 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table table-space">
+        <table class="table table-hover table-space">
             <thead><tr><th>应用名称</th><th class="w140">租户</th><th class="w70">状态</th><th class="w100">到期时间</th><th class="w120">创建时间</th><th class="w120">更新时间</th><th class="w40">设置</th></tr></thead>
             <tbody>
                 {foreach $apps as $rs}
@@ -100,7 +100,7 @@
 <script type="text/javascript">
 Do('base',function(){
     $('.delBind').actUrl({is_delete:true})
-    $('.win').win({area:'50%'})
+    $('.win').win({area:'50%',title:' 选择应用'})
     $('.act').actUrl({is_delete:true,text:'确认改变当前状态?'})
 })
 function setApp(ids) {

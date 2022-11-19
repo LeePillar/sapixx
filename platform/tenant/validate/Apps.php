@@ -14,6 +14,7 @@ class Apps extends Validate{
     protected $rule = [
         'app_id'        => 'require|integer',
         'apps_id'       => 'require|integer',
+        'plugin_id'     => 'require|integer',
         'title'         => 'require',
         'about'         => 'require',
         'safepassword'  => 'require|number|length:6',
@@ -33,6 +34,7 @@ class Apps extends Validate{
     protected $message = [
         'app_id'               => '应用未上架应用商店',
         'apps_id'              => '未找到你的应用',
+        'plugin_id'            => '扩展未上架应用商店',
         'title'                => '应用名称必填',
         'about'                => '应用简述必须填写',
         'safepassword.require' => '安全密码必须输入',
@@ -54,6 +56,7 @@ class Apps extends Validate{
         'wechatpay'  => ['appid','mchid','secret'],
         'alipay'     => ['appid','cert','certkey'],
         'onbuy'      => ['app_id','title','about','safepassword','agree'],
+        'plugin'     => ['plugin_id','safepassword','agree'],
         'renewal'    => ['apps_id','safepassword','agree'],
         'storage'    => ['driver','aes_key','secret','bucket','url'],
     ];

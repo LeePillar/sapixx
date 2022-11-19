@@ -11,8 +11,8 @@ namespace base\constant;
 use think\App;
 use think\facade\Config;
 use filter\Filter;
-use Hashids\Hashids;
 use base\model\SystemAppsClient;
+use base\model\SystemPlugin;
 
 /**
  * API解析到指定的应用
@@ -70,10 +70,13 @@ class InitRoute
      */
     public function handle()
     {
-        $this->checkInstall();
+        $this->checkSystem();
         switch ($this->import) {
             case 'api':
                 $this->setApi();
+                break;
+            case 'plugin':
+                $this->setPlugin();
                 break;
             case 'web':
                 $this->setTenantWeb();
@@ -114,7 +117,7 @@ class InitRoute
         //是否为应用API配置独立的访问域名
         $api_sub_domain = Config::get('api.api_sub_domain');
         if (!empty($api_sub_domain) && $api_sub_domain != $this->app->request->domain()) {
-            exitjson(403,'当前访问非API有效域名');
+            exitjson(403,'APIDomain Error');
         }
         $this->checkApi();
         //检查API路径
@@ -122,8 +125,7 @@ class InitRoute
             exitjson(404,'没有找到应用');
         }
         Config::set(['controller_layer' => 'api\\'.str_replace('.', '_', $this->version)], 'route');
-        $this->app->http->name($this->name);
-        $this->app->request->setPathinfo(ltrim(substr($this->path, strlen($this->import . '/' . $this->version . '/' . $this->name)), '/'));
+        $this->app->request->setPathinfo(ltrim(substr($this->path, strlen($this->import . '/' . $this->version)), '/'));
         $this->composer = $this->name.DS;
         return true;
     }
@@ -136,12 +138,7 @@ class InitRoute
         if (empty($this->version) || !preg_match('/^([a-zA-Z0-9]){6}$/',$this->version)) {
             abort(404,'WEB路径访问错误');
         }
-        $hashids = new Hashids(config('api.jwt_salt'),6,config('api.safeid_meta'));
-        $client_id = $hashids->decode($this->version);
-        if(empty($client_id[0])){
-            abort(404,'应用ID解码失败');
-        }
-        $client = SystemAppsClient::where(['id' => $client_id[0]])->cache(180)->find();
+        $client = SystemAppsClient::where(['id' => idcode($this->version)])->cache(180)->find();
         if(empty($client)){
             abort(404,'你访问的URL不存在');
         }
@@ -157,8 +154,7 @@ class InitRoute
         Config::set(['controller_layer' => 'web\\'.$client->title],'route');
         Config::set(['view_path' => PATH_APP.$client->app->appname.DS.'web' . DS.'view'.DS.$client->title.DS], 'view'); 
         //修改系统默认配置
-        $this->app->http->name($client->app->appname);
-        $this->app->request->setPathinfo(ltrim(substr($this->path,strlen($this->import.'/'.$this->version)),'/'));
+        $this->app->request->setPathinfo($client->app->appname.'/'.ltrim(substr($this->path,strlen($this->import.'/'.$this->version)),'/'));
         $this->app->request->client = $client;
         $this->composer = $client->app->appname.DS;
         return true;
@@ -200,9 +196,8 @@ class InitRoute
             Config::set(['view_path' => $appPath . 'view' . DS], 'view'); 
             if ($appname == 'apis') {
                 $this->checkApi();
-                $this->app->http->name($appname);
                 Config::set(['controller_layer' => 'controller\\'.str_replace('.', '_', $this->version)],'route');
-                $this->app->request->setPathinfo(ltrim(substr($this->path, strlen($appname . '/' . $this->version)), '/'));
+                $this->app->request->setPathinfo($appname.'/'.ltrim(substr($this->path,strlen($this->import.'/'.$this->version)),'/'));
             }
         }else{
             $this->composer = $appname.DS;
@@ -211,25 +206,69 @@ class InitRoute
     }
 
    /**
+     * 解析插件路径
+     * @return bool
+     */
+    protected function setPlugin(): bool
+    {
+        $plugName = $this->version;
+        if (empty($plugName) || !preg_match('/^[a-z]+$/',$plugName)) {
+            abort(404,'扩展请求 /'.$plugName.' 路径不正确');
+        }
+        $plugPath = PATH_TOOT.'plugin'.DS.$plugName.DS;
+        if (!is_dir($plugPath)) {
+            abort(404,'扩展 '.$plugName.' 未找到');
+        }
+        $plugin = SystemPlugin::where(['appname' => $plugName])->cache(true)->find();
+        if(empty($plugin)){
+            abort(404,'扩展 '.$plugName.' 未安装');
+        }
+        $this->app->request->plugin = $plugin;
+        //重定义扩展目录
+        $this->app->http->path($plugPath); 
+        $this->app->setAppPath($plugPath);
+        $this->app->setNamespace('plugin\\'.$plugName);
+        $this->app->request->setPathinfo(ltrim(substr($this->path,strlen('plugin')),'/'));
+        //加载扩展的全局函数
+        if (is_file($plugPath . 'common.php')) {
+            include_once $appPath . 'common.php';
+        }
+        Config::set(['app_namespace' => 'plugin\\'.$plugName], 'app'); 
+        Config::set(['view_path' => $plugPath.'view' . DS], 'view'); 
+        return true;
+    }
+
+ 
+   /**
      * 检查API版本规则
      * @return bool
      */   
     protected function checkApi(): bool
     {
         if (empty($this->version) || !preg_match('/((^([a-zA-Z]*)$)|(^[v]\d{1}?(\.(0|[1-9]\d?)){1,2})$)/',$this->version)) {
-            exitjson(403, 'API版本规则错误');
+            exitjson(403, 'APIVersion Rules Error');
         }
         return true;
     }
 
     /**
-     * 检查是否已经正常安装系统
+     * 1、检查是否已经正常安装系统
+     * 2、检查API是否配置独立域名
      */
-    private function checkInstall()
+    private function checkSystem()
     {
+        //检查是否已经正常安装系统
         if (!file_exists(PATH_RUNTIME."install.lock")) {
             Config::set(['default_app' => 'install'],'app');
             $this->import = 'install';
+        }else{
+            //检查API是否配置独立域名(如果访问)
+            $api_sub_domain = Config::get('api.api_sub_domain');
+            if (!empty($api_sub_domain) && $api_sub_domain == $this->app->request->domain()) {
+                if(empty($this->import) || $this->import != 'api' && $this->import != 'apis'){
+                    exitjson(404, 'API is not found');
+                }
+            }
         }
     }
 

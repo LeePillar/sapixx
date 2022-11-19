@@ -76,68 +76,18 @@ abstract class BaseController
     protected function initialize(){
         //...控制器初始化方法
     }
-    
-    /**
-     * 控制器中添加中间件
-     * @param string|object $middleware
-     * @param ...$params
-     * @return objcet
-     */
-    protected function middleware($middleware, ...$params)
-    {
-        $options = [];
-        $this->middleware[] = [
-            'middleware' => [$middleware, $params],
-            'options'    => &$options,
-        ];
-        return new class($options) {
-            protected $options;
-            public function __construct(array &$options){
-                $this->options = &$options;
-            }
-            public function only($methods){
-                $this->options['only'] = is_array($methods) ? $methods : func_get_args();
-                return $this;
-            }
-            public function except($methods){
-                $this->options['except'] = is_array($methods) ? $methods : func_get_args();
-                return $this;
-            }
-        };
-    }
-
+   
     /**
      * 设置控制器常用参数
      * @return void
      */
-    public function initControllerParam()
+    protected function initControllerParam()
     {
         $this->param = $this->request->param();
         $this->pages = $this->setPage();
         $this->page  = $this->request->param('page/d',1);
     }
-
-    /**
-     * 空的控制器方法
-     * @param string $method
-     * @param array  $args
-     * @return void
-     */
-    public function __call($method, $args){
-        abort(404,'未找到你请求的URL "'.$method.'" 页面资源');
-    }
-
-    /**
-     * 设置分页信息
-     * @param integer $num
-     * @param array $query
-     * @return array
-     */
-    public function setPage(int $num = 10, array $query = []): array
-    {
-        return ['list_rows' => $num, 'query' => $query ?: $this->param]; //默认翻页参数
-    }
-
+    
     /**
      * 初始化请求配置
      */
@@ -176,6 +126,35 @@ abstract class BaseController
     }
 
     /**
+     * 控制器中添加中间件
+     * @param string|object $middleware
+     * @param ...$params
+     * @return objcet
+     */
+    protected function middleware($middleware, ...$params)
+    {
+        $options = [];
+        $this->middleware[] = [
+            'middleware' => [$middleware, $params],
+            'options'    => &$options,
+        ];
+        return new class($options) {
+            protected $options;
+            public function __construct(array &$options){
+                $this->options = &$options;
+            }
+            public function only($methods){
+                $this->options['only'] = is_array($methods) ? $methods : func_get_args();
+                return $this;
+            }
+            public function except($methods){
+                $this->options['except'] = is_array($methods) ? $methods : func_get_args();
+                return $this;
+            }
+        };
+    }
+    
+    /**
      * 获取当前的 response 输出类型
      * @access protected
      * @return string
@@ -204,7 +183,7 @@ abstract class BaseController
             $url = url($url);
         }
         $type = $this->getResponseType();
-        $result = ['code' => 200, 'msg'  => $msg,'title'  => $title,'url'  => $url];
+        $result = ['code' => 200, 'message'  => $msg, 'msg'  => $msg,'title'  => $title,'url'  => $url];
         if ('html' == strtolower($type)) {
             $result = View::layout(false)->fetch(Config::get('app.return_tmpl'), $result);
         }
@@ -231,7 +210,7 @@ abstract class BaseController
             $url = url($url);
         }
         $type = $this->getResponseType();
-        $result = ['code' => 404, 'msg'  => $msg,'title'  => $title,'url'  => $url];
+        $result = ['code' => 404, 'message'  => $msg, 'msg'  => $msg,'title'  => $title,'url'  => $url];
         if ('html' == strtolower($type)) {
             $result = View::layout(false)->fetch(Config::get('app.return_tmpl'),$result);
         }
@@ -258,7 +237,7 @@ abstract class BaseController
             $url = url($url);
         }
         $type = $this->getResponseType();
-        $result = ['code' => 302, 'msg'  => $msg, 'data' => $data, 'url'  => $url, 'wait' => $wait];
+        $result = ['code' => 302, 'message'  => $msg, 'msg'  => $msg, 'data' => $data, 'url'  => $url, 'wait' => $wait];
         if ('html' == strtolower($type)) {
             $result = View::layout(false)->fetch(Config::get('app.jump_tmpl'),$result);
         }
@@ -298,5 +277,26 @@ abstract class BaseController
             $v->batch(true);
         }
         return $v->failException(true)->check($data);
+    }
+
+    /**
+     * 设置分页信息
+     * @param integer $num
+     * @param array $query
+     * @return array
+     */
+    public function setPage(int $num = 10, array $query = []): array
+    {
+        return ['list_rows' => $num, 'query' => $query ?: $this->param]; //默认翻页参数
+    }
+
+    /**
+     * 空的控制器方法
+     * @param string $method
+     * @param array  $args
+     * @return void
+     */
+    public function __call($method, $args){
+        abort(404,'未找到你请求的URL "'.$method.'" 页面资源');
     }
 }

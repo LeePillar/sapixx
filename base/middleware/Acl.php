@@ -4,7 +4,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.txt
  * @link https://www.sapixx.com
  * @author pillar<ltmn@qq.com>
- * 租户中间件
+ * 租户中间件(权限判断)
  */
 namespace base\middleware;
 use think\App;

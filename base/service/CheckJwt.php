@@ -12,6 +12,7 @@ namespace base\service;
 use think\Request;
 use think\facade\Config;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use code\Code;
 
 /**
@@ -25,8 +26,14 @@ class CheckJwt
      */
     protected $request;
 
+    /** 
+     * @var array 
+     */
+    protected static $config;
+
     public function __construct(Request $request)
     {
+        self::$config  = Config::get('api');
         $this->request = $request;
     }
  
@@ -37,13 +44,16 @@ class CheckJwt
      */
     public static function enJwt($jwt)
     {
-        $secretKey = Config::get('api.jwt_secret_key');
-        $algorithm = Config::get('api.jwt_algorithm');
-        if (!$secretKey || !$algorithm) {
-            exitjson(10003);
+        try { 
+            return Jwt::encode([
+                'data' => self::enToken($jwt),
+                'iat'  => time(),
+                'exp'  => time() + self::$config['api_sige_time']??300,
+                'nbf'  => time() - self::$config['api_sige_time']??300
+            ],self::$config['jwt_secret_key'],self::$config['jwt_algorithm']);
+        } catch (\Exception $e) {
+            exitjson(11003);
         }
-        //使用JWT解码并返回
-        return self::enToken(Jwt::encode($jwt,$secretKey,$algorithm));
     }
 
     /**
@@ -53,19 +63,11 @@ class CheckJwt
      */
     public static function deJwt($jwt)
     {
-        $secretKey = Config::get('api.jwt_secret_key');
-        $algorithm = Config::get('api.jwt_algorithm');
-        if (!$secretKey || !$algorithm) {
-            exitjson(10003);
-        }
         try {
-            $decode = Jwt::decode(self::deToken($jwt),$secretKey,[$algorithm]);
-            if ($decode) {
-                return $decode;
-            }
-            return false;
+            $jwt = (array)Jwt::decode($jwt, new Key(self::$config['jwt_secret_key'],self::$config['jwt_algorithm']));
+            return self::deToken($jwt['data']);
         } catch (\Exception $e) {
-            return false;
+            exitjson(11004);
         }
     }
 
@@ -77,7 +79,7 @@ class CheckJwt
      */
     public static function enToken($string)
     {
-        return Code::en($string,Config::get('api.jwt_salt'),'ENCODE',Config::get('api.jwt_logout_time'));
+        return Code::en($string,self::$config['jwt_salt'],'ENCODE',self::$config['jwt_logout_time']);
     }
 
     /**
@@ -87,7 +89,11 @@ class CheckJwt
      */
     public static function deToken($string)
     {
-        return Code::de($string,Config::get('api.jwt_salt'));
+        try {
+            return Code::de($string,self::$config['jwt_salt']);
+        } catch (\Exception $e) {
+            exitjson(11004);
+        }
     }
 
     /**

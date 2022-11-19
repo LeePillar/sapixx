@@ -1,0 +1,39 @@
+{extend name="./layout" /}
+{block name="main"}
+<div class="card">
+    <div class="card-header tab">
+        <div class="tab-item text-bold active"><a href="{:url('tenant/plugin/index')}">我的扩展</a></div>
+        <div class="tab-item text-bold"><a href="{:url('tenant/plugin/store')}">扩展商店</a></div>
+        <div class="col"></div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead><tr><th>扩展名称</th></tr></thead>
+            <tbody>
+                {foreach $list as $rs}
+                <tr>
+                    <td>
+                        <div class="tile tile-centered">
+                            <div class="tile-icon"><img class="w60 rounded img-responsive" src="{$rs.plugin.logo}"></div>
+                            <div class="tile-content">
+                                <div class="tile-title h5">{$rs.plugin.title}</div>
+                                <div class="tile-subtitle mt-4">{$rs.plugin.about??''}</div>
+                            </div>
+                            <div class="tile-action"><button url="{:url('plugin/group',['id' => $rs.id])}" class="btn win" outline primary>权限组</button></div>
+                        </div>
+                    </td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">{$list|raw}</div>
+</div>
+{/block}
+{block name="js"}
+<script type="text/javascript">
+Do('base',function(){
+    $('.win').win({reload:true,title:'权限组'})
+})
+</script>
+{/block}

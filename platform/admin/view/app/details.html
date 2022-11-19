@@ -1,12 +1,59 @@
 {extend name="./layout" /}
 {block name='main'}
-<div class="card">
+<div class="cols">
+    <div class="col col-sm-12 col-5">
+        <div class="card h120">
+            <div class="card-body">
+                <div class="tile tile-centered">
+                    <div class="tile-icon"><img src="{$info.logo}" class="w70 w70 rounded img-responsive"></div>
+                    <div class="tile-content">
+                        <div class="text-dark">{$info.title} <span class="text-tiny">v</span></div>
+                        <div class="text-gray">{$info.about}</div>
+                    </div>
+                    {if isset($info.config.is_admin) && $info.config.is_admin == 1}
+                    <div class="tile-action  btn-group">
+                        <button class="btn tips tips-left is_admin" data-tips="管理应用" href="{:url('app/manage',['id' => $info->id])}" outline primary icon><i class="icon bi-layout-text-window-reverse icon-2x"></i></button>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-sm-12 col-7">
+        <div class="card h120">
+            <div class="card-body cols">
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">应用类型{foreach $info.config.types as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                        <li class="list-item">支付方式{foreach $info.config.payment as $title}<span class="ml-8 tag">{$title}</span>{/foreach}</li>
+                        <li class="list-item">应用接入<span class="ml-16 status status-{$apps.app.config.is_open_wechat?'success':'error'}">{$info.config.open_wechat_text}</span></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul class="list">
+                        <li class="list-item">当前版本
+                            <span class="ml-16 text-gray">{$Think.const.SYSNAME} {$Think.const.BASEVER}</span>
+                            {notempty name="$info.config.check_var"}
+                            <sapn class="ml-8 c-hand tag tag-error checkVar">检查</sapn>
+                            {/notempty}
+                        </li>
+                        {notempty name="$info.config.uri"}
+                        <li class="list-item">官网网站:<span class="ml-16 text-gray"><a href="{$info.config.uri}" target="_blank">{$info.config.uri}</a></span></li>
+                        {/notempty}
+                        <li class="list-item">安装时间:<span class="ml-16 text-gray">{$info.create_time}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mt-16">
     <div class="card-header">
         <div class="cols">
             <div class="col space space-align-center text-bold"><i class="icon bi-menu-app icon-2x mr-8"></i>租户应用</div>
             <div class="col col-auto btn-group btn-group-block">
-                <a pjax href="{:url('app/details',['types'=>0])}" class="btn" {$Request.param.types == 0?'primary':'outline'}>正常</a>
-                <a pjax href="{:url('app/details',['types'=>1])}" class="btn" {$Request.param.types == 1?'primary':'outline'}>过期</a>
+                <a pjax href="{:url('app/details',['id' => $Request.param.id,'types'=>0])}" class="btn" {$Request.param.types == 0?'primary':'outline'}>正常</a>
+                <a pjax href="{:url('app/details',['id' => $Request.param.id,'types'=>1])}" class="btn" {$Request.param.types == 1?'primary':'outline'}>过期</a>
             </div>
         </div>
     </div>
@@ -52,6 +99,14 @@
 <script type="text/javascript">
 Do('base',function(){
     $('.win').win({reload:true})
+    $('.act').actUrl({is_delete:true,text:'确认改变当前状态?'})
+    $(".checkVar").click(()=>{
+        http.get("{:url('license/checkVar')}")
+    })
+    $('.is_admin').actUrl({skin:'warning',text:'同时只能对一个应用进行管理操作!','content':'管理应用'},(rel) =>{
+        parent.layer.toast(rel.message, {skin: 'success'});
+        204==rel.code&&parent.getMenu(1);
+    })
 })
 </script>
 {/block}

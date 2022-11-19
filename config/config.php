@@ -4,7 +4,7 @@ return [
      * 站点信息根据需要自行扩展
      */
     'site' => [
-        'title'    => '撒皮|Sapi++', //站点名称
+        'title'    => '撒皮|SAPI++', //站点名称
         'subtitle' => '简约的SaaS应用管理引擎', //站点副标题
         'logo'     => '/common/img/logo.png', //站点Logo,基于public目录
         'url'      => 'https://www.sapixx.com', //网址

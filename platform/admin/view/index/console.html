@@ -69,7 +69,12 @@
 </div>
 <div class="card">
     <div class="card-header cols">
-        <div class="col space space-align-center text-bold"><i class="icon bi-list-task icon-2x mr-8"></i>用户账单</div>
+        <div class="col space space-align-center text-bold">
+            <div class="btn-group">
+                <button class="btn action" url="{:url('tenant/multiAction')}" primary><i class="icon bi-trash3 mr-8"></i>删除账单</button>
+                <button class="btn action" url="{:url('tenant/multiDelete')}" outline><i class="icon bi-archive mr-8"></i>清空失败</button> 
+            </div>
+        </div>
         <div class="col col-auto btn-group btn-group-block">
             <a pjax href="{:url('index/console',['money'=>0])}" class="btn" {$Request.param.money == 0?'primary':'outline'}>全部</a>
             <a pjax href="{:url('index/console',['money'=>1])}" class="btn" {$Request.param.money == 1?'primary':'outline'}>充值</a>
@@ -79,11 +84,12 @@
     <div class="card-body">
         <table class="table table-hover">
             <thead>
-                <tr><th class="w80 text-center">类型</th><th class="w100">金额</th><th class="w60">状态</th><th>说明</th><th class="w140">时间</th></tr>
+                <tr><th class="text-center w40"><input type="checkbox" id="checkAll"></th><th class="w80 text-center">类型</th><th class="w100">金额</th><th class="w60">状态</th><th>说明</th><th class="w140">时间</th></tr>
             </thead>
             <tbody>
             {foreach $bill as $vo}
             <tr>
+                <td class="text-center"><input name="ids[]" type="checkbox" value="{$vo.id}"></td>
                 <td class="text-center"><span class="tag tag-{$vo.money>0?'primary':'warning'}">{$vo.types}</span></td>
                 <td class="widget-price">{$vo.money}</td>
                 <td><span class="lock status status-{$vo.state?'success':''}">{$vo.state_text}</span></td>
@@ -96,4 +102,12 @@
     </div>
     <div class="card-footer">{$bill|raw}</div>
 </div>
+{/block}
+{block name='js'}
+<script type="text/javascript">
+Do('base','form',function () {
+    $("#checkAll").checkAll()
+    $(".action").multiAction()
+})
+</script>
 {/block}

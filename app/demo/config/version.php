@@ -4,8 +4,12 @@ return [
     'name'               => '开发实例',
     //应用描述(40个字以内)
     'about'              => "撒皮|Sapi++是SaaS应用开发框架,基于TP6开发,开发实例是帮助你快速入门开发",
+    //官网网站(可留空)
+    'uri'                => 'https://www.test.com',
     //版本号
     'var'                => '1.0.0',
+    //(可留空)检查版本API 返回JSON格式,{message:"SAPI++v2.1.3",code:200}
+    'check_var'          => 'https://www.test.com/apis/service/index/checkVar',  
     //是否微信开发平台应用 
     'is_open_wechat'     => false,
     //is_open_wechat设置为true 必须设置本项未开放平台平台模板ID
